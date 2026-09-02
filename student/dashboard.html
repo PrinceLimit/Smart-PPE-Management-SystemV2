@@ -76,6 +76,25 @@
         </section>
 
 
+        <!-- ACTION BAR -->
+        <section class="dashboard-card student-action-bar">
+            <div>
+                <h2 style="margin-bottom:6px;">My Workshop Activity</h2>
+                <p style="margin:0;">Check your tools and borrowing records anytime.</p>
+                <small id="lastUpdated" style="display:block;margin-top:8px;opacity:.7;">Last updated: -</small>
+            </div>
+
+            <button
+                id="refreshBtn"
+                class="logout-btn"
+                type="button"
+                style="border:none;cursor:pointer;"
+            >
+                Refresh
+            </button>
+        </section>
+
+
 
         <!-- STATISTICS -->
 
@@ -209,6 +228,28 @@
             </div>
 
 
+            <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px;">
+                <input
+                    id="historySearch"
+                    type="text"
+                    placeholder="Search tool ID or tool name..."
+                    style="flex:1;min-width:220px;padding:11px 13px;border:1px solid #ddd;border-radius:10px;"
+                >
+
+                <select
+                    id="historyFilter"
+                    style="padding:11px 13px;border:1px solid #ddd;border-radius:10px;"
+                >
+                    <option value="ALL">All</option>
+                    <option value="BORROWED">Borrowed</option>
+                    <option value="RETURNED">Returned</option>
+                </select>
+            </div>
+
+            <div id="historySummary" style="margin-bottom:14px;opacity:.75;font-size:.95rem;">
+                Showing 0 records
+            </div>
+
             <div id="historyList">
 
                 <div class="loading">
@@ -223,6 +264,60 @@
     </div>
 
 
+
+<style>
+    .student-action-bar {
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        gap:20px;
+        flex-wrap:wrap;
+    }
+
+    .history-row,
+    .tool-row {
+        border:1px solid rgba(0,0,0,.08);
+        border-radius:14px;
+        padding:16px;
+        margin-bottom:12px;
+        background:rgba(255,255,255,.85);
+    }
+
+    .history-row {
+        display:grid;
+        grid-template-columns:1.2fr 1.8fr auto;
+        gap:16px;
+        align-items:center;
+    }
+
+    .tool-row {
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        gap:16px;
+    }
+
+    .student-meta {
+        font-size:.92rem;
+        opacity:.75;
+        margin-top:5px;
+    }
+
+    @media (max-width: 720px) {
+        .history-row {
+            grid-template-columns:1fr;
+        }
+
+        .tool-row {
+            align-items:flex-start;
+            flex-direction:column;
+        }
+
+        .student-action-bar {
+            align-items:flex-start;
+        }
+    }
+</style>
 
 <script>
 
@@ -306,6 +401,9 @@
     }
 
 
+
+    let allHistoryRecords = [];
+    let currentStudentId = null;
 
     /* =====================================================
        LOAD STUDENT
@@ -405,6 +503,8 @@
         const student =
             data[0];
 
+        currentStudentId = student.id;
+
 
         console.log(
             "Student found:",
@@ -431,6 +531,7 @@
 
 
         await loadTools();
+        updateLastUpdated();
 
     }
 
@@ -651,138 +752,133 @@
            HISTORY
            ================================================ */
 
+        allHistoryRecords = records;
+        renderHistory();
+
+
+        
+    }
+
+
+
+    /* =====================================================
+       RENDER HISTORY
+       ===================================================== */
+
+    function renderHistory() {
+
         const historyContainer =
-            document.getElementById(
-                "historyList"
-            );
+            document.getElementById("historyList");
 
+        const summary =
+            document.getElementById("historySummary");
 
-        if (
-            records.length === 0
-        ) {
+        const searchInput =
+            document.getElementById("historySearch");
 
-            historyContainer.innerHTML = `
+        const filterInput =
+            document.getElementById("historyFilter");
 
-                <div class="empty-state">
+        const searchTerm =
+            (searchInput?.value || "").trim().toLowerCase();
 
-                    <h3>
-                        No borrowing history
-                    </h3>
+        const filterStatus =
+            filterInput?.value || "ALL";
 
-                    <p>
-                        Your borrowing records will appear here.
-                    </p>
+        const filtered =
+            allHistoryRecords.filter(record => {
 
-                </div>
+                const tool =
+                    record.tools || {};
 
-            `;
+                const matchesSearch =
+                    !searchTerm ||
+                    String(tool.tool_id || "").toLowerCase().includes(searchTerm) ||
+                    String(tool.tool_name || "").toLowerCase().includes(searchTerm);
 
-        } else {
+                const matchesStatus =
+                    filterStatus === "ALL" ||
+                    record.status === filterStatus;
 
-            historyContainer.innerHTML =
-                records
-                    .map(
-                        record => {
+                return matchesSearch && matchesStatus;
+            });
 
-                            const tool =
-                                record.tools;
-
-
-                            const statusClass =
-                                record.status === "BORROWED"
-                                    ? "in-use"
-                                    : "returned";
-
-
-                            return `
-
-                                <div class="history-row">
-
-
-                                    <div>
-
-                                        <strong>
-                                            ${
-                                                tool?.tool_id ||
-                                                "-"
-                                            }
-                                        </strong>
-
-                                        <p>
-                                            ${
-                                                tool?.tool_name ||
-                                                "Unknown Tool"
-                                            }
-                                        </p>
-
-                                    </div>
-
-
-                                    <div>
-
-                                        <p>
-                                            Borrowed:
-                                            ${
-                                                formatDate(
-                                                    record.borrowed_at
-                                                )
-                                            }
-                                        </p>
-
-
-                                        <p>
-                                            Returned:
-                                            ${
-                                                record.returned_at
-                                                    ? formatDate(
-                                                          record.returned_at
-                                                      )
-                                                    : "-"
-                                            }
-                                        </p>
-
-
-                                        <p>
-                                            Borrowed By:
-                                            ${
-                                                record.borrowed_by ||
-                                                "-"
-                                            }
-                                        </p>
-
-
-                                        <p>
-                                            Returned By:
-                                            ${
-                                                record.returned_by ||
-                                                "-"
-                                            }
-                                        </p>
-
-                                    </div>
-
-
-                                    <div>
-
-                                        <span
-                                            class="status-badge ${statusClass}"
-                                        >
-                                            ${record.status}
-                                        </span>
-
-                                    </div>
-
-
-                                </div>
-
-                            `;
-
-                        }
-                    )
-                    .join("");
-
+        if (summary) {
+            summary.textContent =
+                `Showing ${filtered.length} of ${allHistoryRecords.length} records`;
         }
 
+        if (!historyContainer) return;
+
+        if (filtered.length === 0) {
+
+            historyContainer.innerHTML = `
+                <div class="empty-state">
+                    <h3>No matching records</h3>
+                    <p>Try another search or filter.</p>
+                </div>
+            `;
+
+            return;
+        }
+
+        historyContainer.innerHTML =
+            filtered
+                .map(record => {
+
+                    const tool =
+                        record.tools || {};
+
+                    const statusClass =
+                        record.status === "BORROWED"
+                            ? "in-use"
+                            : "returned";
+
+                    return `
+                        <div class="history-row">
+
+                            <div>
+                                <strong>${tool.tool_id || "-"}</strong>
+                                <div class="student-meta">
+                                    ${tool.tool_name || "Unknown Tool"}
+                                </div>
+                            </div>
+
+                            <div>
+                                <p style="margin:0 0 6px;">
+                                    <strong>Borrowed:</strong>
+                                    ${formatDate(record.borrowed_at)}
+                                </p>
+
+                                <p style="margin:0 0 6px;">
+                                    <strong>Returned:</strong>
+                                    ${record.returned_at
+                                        ? formatDate(record.returned_at)
+                                        : "-"
+                                    }
+                                </p>
+
+                                <p style="margin:0 0 6px;">
+                                    <strong>Borrowed By:</strong>
+                                    ${record.borrowed_by || "-"}
+                                </p>
+
+                                <p style="margin:0;">
+                                    <strong>Returned By:</strong>
+                                    ${record.returned_by || "-"}
+                                </p>
+                            </div>
+
+                            <div>
+                                <span class="status-badge ${statusClass}">
+                                    ${record.status}
+                                </span>
+                            </div>
+
+                        </div>
+                    `;
+                })
+                .join("");
     }
 
 
@@ -974,6 +1070,80 @@
             }
         );
 
+
+
+    /* =====================================================
+       HISTORY FILTERS / REFRESH
+       ===================================================== */
+
+    function updateLastUpdated() {
+
+        const el =
+            document.getElementById("lastUpdated");
+
+        if (!el) return;
+
+        el.textContent =
+            "Last updated: " +
+            new Date().toLocaleString(
+                "en-MY",
+                {
+                    dateStyle: "medium",
+                    timeStyle: "short"
+                }
+            );
+    }
+
+
+    document
+        .getElementById("historySearch")
+        ?.addEventListener(
+            "input",
+            renderHistory
+        );
+
+
+    document
+        .getElementById("historyFilter")
+        ?.addEventListener(
+            "change",
+            renderHistory
+        );
+
+
+    document
+        .getElementById("refreshBtn")
+        ?.addEventListener(
+            "click",
+            async function () {
+
+                const btn =
+                    document.getElementById("refreshBtn");
+
+                if (btn) {
+                    btn.disabled = true;
+                    btn.textContent = "Refreshing...";
+                }
+
+                try {
+                    await loadStudentData();
+                } finally {
+                    if (btn) {
+                        btn.disabled = false;
+                        btn.textContent = "Refresh";
+                    }
+                }
+            }
+        );
+
+
+    // Keep the student dashboard reasonably fresh.
+    setInterval(
+        function () {
+            loadStudentData();
+        },
+        15000
+    );
 
 
     /* =====================================================

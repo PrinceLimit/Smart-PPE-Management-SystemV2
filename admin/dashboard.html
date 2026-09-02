@@ -17,172 +17,5569 @@
         href="../css/style.css"
     >
 
+    <script
+        src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+    ></script>
+
+
+    <style>
+
+        /* =====================================================
+           ADMIN LAYOUT
+           ===================================================== */
+
+        .admin-layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+
+        .admin-sidebar {
+            width: 250px;
+            background: #ffffff;
+            border-right: 1px solid #e5e7eb;
+
+            display: flex;
+            flex-direction: column;
+
+            padding: 25px 16px;
+
+            position: fixed;
+
+            top: 0;
+            left: 0;
+            bottom: 0;
+
+            z-index: 100;
+        }
+
+
+        .sidebar-logo {
+            padding: 5px 12px 25px;
+
+            border-bottom: 1px solid #e5e7eb;
+
+            margin-bottom: 20px;
+        }
+
+
+        .sidebar-logo h2 {
+            font-size: 21px;
+            color: #111827;
+
+            margin-bottom: 5px;
+        }
+
+
+        .sidebar-logo p {
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+
+        .admin-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+
+
+        .nav-item {
+            width: 100%;
+
+            padding: 13px 15px;
+
+            border-radius: 10px;
+
+            border: none;
+
+            background: transparent;
+
+            color: #4b5563;
+
+            font-size: 14px;
+
+            font-weight: 600;
+
+            display: flex;
+            align-items: center;
+
+            gap: 11px;
+
+            cursor: pointer;
+
+            text-align: left;
+        }
+
+
+        .nav-item:hover {
+            background: #f3f4f6;
+            color: #111827;
+        }
+
+
+        .nav-item.active {
+            background: #5b4bdb;
+            color: #ffffff;
+        }
+
+
+        .nav-icon {
+            width: 20px;
+            text-align: center;
+        }
+
+
+        .sidebar-bottom {
+            margin-top: auto;
+
+            padding-top: 20px;
+
+            border-top: 1px solid #e5e7eb;
+        }
+
+
+        .sidebar-user {
+            padding: 12px 14px;
+
+            margin-bottom: 10px;
+
+            background: #f9fafb;
+
+            border-radius: 10px;
+        }
+
+
+        .sidebar-user strong {
+            display: block;
+
+            font-size: 13px;
+
+            color: #111827;
+
+            margin-bottom: 3px;
+        }
+
+
+        .sidebar-user span {
+            font-size: 11px;
+
+            color: #6b7280;
+        }
+
+
+        .sidebar-logout {
+            width: 100%;
+
+            padding: 12px 15px;
+
+            border: none;
+
+            border-radius: 10px;
+
+            background: #fee2e2;
+
+            color: #991b1b;
+
+            font-size: 14px;
+
+            font-weight: 700;
+
+            cursor: pointer;
+
+            text-align: left;
+        }
+
+
+        .sidebar-logout:hover {
+            background: #fecaca;
+        }
+
+
+        /* =====================================================
+           MAIN
+           ===================================================== */
+
+        .admin-main {
+            flex: 1;
+
+            margin-left: 250px;
+
+            width: calc(100% - 250px);
+
+            padding: 30px;
+        }
+
+
+        .admin-page-header {
+            background: #ffffff;
+
+            border-radius: 18px;
+
+            padding: 24px 28px;
+
+            margin-bottom: 24px;
+
+            box-shadow:
+                0 8px 25px rgba(0, 0, 0, 0.06);
+        }
+
+
+        .admin-page-header h1 {
+            font-size: 28px;
+
+            color: #111827;
+
+            margin-bottom: 5px;
+        }
+
+
+        .admin-page-header p {
+            color: #6b7280;
+
+            font-size: 14px;
+        }
+
+
+        /* =====================================================
+           MANAGEMENT ACTIONS
+           ===================================================== */
+
+        .management-actions {
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            gap: 12px;
+
+            margin-bottom: 18px;
+
+            flex-wrap: wrap;
+        }
+
+
+        .management-actions-left {
+            display: flex;
+
+            gap: 10px;
+
+            flex-wrap: wrap;
+        }
+
+
+        .action-btn {
+            border: none;
+
+            border-radius: 10px;
+
+            padding: 12px 17px;
+
+            font-size: 14px;
+
+            font-weight: 700;
+
+            cursor: pointer;
+
+            color: #ffffff;
+
+            background: #5b4bdb;
+        }
+
+
+        .action-btn:hover {
+            background: #4d3fc5;
+        }
+
+
+        .action-btn.secondary {
+            background: #111827;
+        }
+
+
+        .action-btn.secondary:hover {
+            background: #374151;
+        }
+
+
+        /* =====================================================
+           MANAGEMENT TABLE
+           ===================================================== */
+
+        .management-table-wrap {
+            width: 100%;
+
+            overflow-x: auto;
+        }
+
+
+        .management-table {
+            width: 100%;
+
+            border-collapse: collapse;
+
+            min-width: 760px;
+        }
+
+
+        .management-table th {
+            text-align: left;
+
+            padding: 14px;
+
+            background: #f9fafb;
+
+            border-bottom: 1px solid #e5e7eb;
+
+            color: #374151;
+
+            font-size: 13px;
+        }
+
+
+        .management-table td {
+            padding: 14px;
+
+            border-bottom: 1px solid #eef0f3;
+
+            color: #4b5563;
+
+            font-size: 13px;
+
+            vertical-align: middle;
+        }
+
+
+        .management-table tr:last-child td {
+            border-bottom: none;
+        }
+
+
+        .management-table td strong {
+            color: #111827;
+        }
+
+
+        /* =====================================================
+           ACTION BUTTONS IN TABLE
+           ===================================================== */
+
+        .table-actions {
+            display: flex;
+
+            gap: 7px;
+
+            flex-wrap: wrap;
+        }
+
+
+        .edit-btn,
+        .delete-btn {
+            border: none;
+
+            border-radius: 7px;
+
+            padding: 8px 11px;
+
+            font-size: 12px;
+
+            font-weight: 700;
+
+            cursor: pointer;
+        }
+
+
+        .edit-btn {
+            background: #ede9fe;
+
+            color: #5b4bdb;
+        }
+
+
+        .edit-btn:hover {
+            background: #ddd6fe;
+        }
+
+
+        .delete-btn {
+            background: #fee2e2;
+
+            color: #991b1b;
+        }
+
+
+        .delete-btn:hover {
+            background: #fecaca;
+        }
+
+
+        /* =====================================================
+           MODAL
+           ===================================================== */
+
+        .modal-overlay {
+            display: none;
+
+            position: fixed;
+
+            inset: 0;
+
+            background: rgba(17, 24, 39, 0.55);
+
+            z-index: 1000;
+
+            align-items: center;
+
+            justify-content: center;
+
+            padding: 20px;
+        }
+
+
+        .modal-overlay.show {
+            display: flex;
+        }
+
+
+        .modal-box {
+            width: 100%;
+
+            max-width: 520px;
+
+            max-height: 90vh;
+
+            overflow-y: auto;
+
+            background: #ffffff;
+
+            border-radius: 18px;
+
+            padding: 28px;
+
+            box-shadow:
+                0 20px 50px rgba(0, 0, 0, 0.20);
+        }
+
+
+        .modal-header {
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            margin-bottom: 22px;
+        }
+
+
+        .modal-header h2 {
+            font-size: 21px;
+
+            color: #111827;
+        }
+
+
+        .close-btn {
+            width: 34px;
+
+            height: 34px;
+
+            border: none;
+
+            border-radius: 8px;
+
+            background: #f3f4f6;
+
+            cursor: pointer;
+
+            font-size: 18px;
+        }
+
+
+        .close-btn:hover {
+            background: #e5e7eb;
+        }
+
+
+        .modal-form-group {
+            margin-bottom: 16px;
+        }
+
+
+        .modal-form-group label {
+            display: block;
+
+            font-size: 13px;
+
+            font-weight: 700;
+
+            color: #374151;
+
+            margin-bottom: 7px;
+        }
+
+
+        .modal-form-group input {
+            width: 100%;
+
+            height: 44px;
+
+            padding: 0 13px;
+
+            border: 1px solid #d1d5db;
+
+            border-radius: 9px;
+
+            font-size: 14px;
+
+            outline: none;
+        }
+
+
+        .modal-form-group input:focus {
+            border-color: #5b4bdb;
+
+            box-shadow:
+                0 0 0 3px rgba(91, 75, 219, 0.12);
+        }
+
+
+        .modal-form-note {
+            font-size: 12px;
+
+            color: #6b7280;
+
+            margin-top: -7px;
+
+            margin-bottom: 16px;
+        }
+
+
+        .modal-actions {
+            display: flex;
+
+            justify-content: flex-end;
+
+            gap: 10px;
+
+            margin-top: 22px;
+        }
+
+
+        .modal-cancel,
+        .modal-submit {
+            border: none;
+
+            border-radius: 9px;
+
+            padding: 11px 17px;
+
+            font-size: 14px;
+
+            font-weight: 700;
+
+            cursor: pointer;
+        }
+
+
+        .modal-cancel {
+            background: #f3f4f6;
+
+            color: #374151;
+        }
+
+
+        .modal-submit {
+            background: #5b4bdb;
+
+            color: #ffffff;
+        }
+
+
+        .modal-submit:hover {
+            background: #4d3fc5;
+        }
+
+
+        .modal-message {
+            display: none;
+
+            margin-top: 15px;
+
+            padding: 11px 12px;
+
+            border-radius: 9px;
+
+            font-size: 13px;
+
+            text-align: center;
+        }
+
+
+        .modal-message.success {
+            display: block;
+
+            background: #dcfce7;
+
+            color: #166534;
+        }
+
+
+        .modal-message.error {
+            display: block;
+
+            background: #fee2e2;
+
+            color: #991b1b;
+        }
+
+
+        /* =====================================================
+           COMING SOON
+           ===================================================== */
+
+        .coming-soon {
+            background: #ffffff;
+
+            border-radius: 18px;
+
+            padding: 45px 30px;
+
+            text-align: center;
+
+            box-shadow:
+                0 8px 22px rgba(0, 0, 0, 0.05);
+        }
+
+
+        .coming-soon h2 {
+            font-size: 22px;
+
+            margin-bottom: 8px;
+
+            color: #111827;
+        }
+
+
+        .coming-soon p {
+            color: #6b7280;
+
+            font-size: 14px;
+        }
+
+
+        /* =====================================================
+           BORROWING CONTROLS
+           ===================================================== */
+
+        .borrow-form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr auto;
+            gap: 14px;
+            align-items: end;
+        }
+
+        .borrow-field label {
+            display: block;
+            font-size: 13px;
+            font-weight: 700;
+            color: #374151;
+            margin-bottom: 7px;
+        }
+
+        .borrow-field select {
+            width: 100%;
+            height: 44px;
+            padding: 0 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 9px;
+            background: #fff;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .borrow-field select:focus {
+            border-color: #5b4bdb;
+            box-shadow: 0 0 0 3px rgba(91, 75, 219, 0.12);
+        }
+
+        .borrow-submit {
+            height: 44px;
+            padding: 0 18px;
+            border: none;
+            border-radius: 9px;
+            background: #5b4bdb;
+            color: #fff;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .borrow-submit:hover {
+            background: #4d3fc5;
+        }
+
+        .return-btn {
+            border: none;
+            border-radius: 7px;
+            padding: 8px 11px;
+            background: #dcfce7;
+            color: #166534;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .return-btn:hover {
+            background: #bbf7d0;
+        }
+
+        .borrow-message {
+            margin-top: 14px;
+            display: none;
+            padding: 11px 12px;
+            border-radius: 9px;
+            font-size: 13px;
+        }
+
+        .borrow-message.success {
+            display: block;
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .borrow-message.error {
+            display: block;
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+
+        /* =====================================================
+           HISTORY PAGE
+           ===================================================== */
+
+        .history-filters {
+            display: grid;
+            grid-template-columns: 1fr 190px;
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+
+        .history-search,
+        .history-filter-select {
+            width: 100%;
+            height: 44px;
+            padding: 0 13px;
+            border: 1px solid #d1d5db;
+            border-radius: 9px;
+            background: #ffffff;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .history-search:focus,
+        .history-filter-select:focus {
+            border-color: #5b4bdb;
+            box-shadow: 0 0 0 3px rgba(91, 75, 219, 0.12);
+        }
+
+        .history-summary {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 18px;
+        }
+
+        .history-summary-badge {
+            padding: 8px 12px;
+            border-radius: 999px;
+            background: #f3f4f6;
+            color: #374151;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .history-empty {
+            text-align: center;
+            padding: 40px 20px;
+            color: #6b7280;
+        }
+
+        @media (max-width: 700px) {
+            .history-filters {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* =====================================================
+           RESPONSIVE
+           ===================================================== */
+
+        @media (max-width: 900px) {
+
+            .admin-sidebar {
+                width: 210px;
+            }
+
+
+            .admin-main {
+                margin-left: 210px;
+
+                width: calc(100% - 210px);
+
+                padding: 20px;
+            }
+
+        }
+
+
+        @media (max-width: 900px) {
+
+            .borrow-form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .borrow-submit {
+                width: 100%;
+            }
+
+        }
+
+
+        @media (max-width: 700px) {
+
+            .admin-layout {
+                display: block;
+            }
+
+
+            .admin-sidebar {
+                position: relative;
+
+                width: 100%;
+
+                height: auto;
+
+                border-right: none;
+
+                border-bottom: 1px solid #e5e7eb;
+
+                padding: 15px;
+            }
+
+
+            .sidebar-logo {
+                margin-bottom: 12px;
+
+                padding-bottom: 15px;
+            }
+
+
+            .admin-nav {
+                display: grid;
+
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+
+            .sidebar-bottom {
+                margin-top: 15px;
+            }
+
+
+            .admin-main {
+                margin-left: 0;
+
+                width: 100%;
+
+                padding: 15px;
+            }
+
+        }
+
+    </style>
+
 </head>
+
 
 <body>
 
-    <div style="
-        max-width: 1100px;
-        margin: 40px auto;
-        padding: 20px;
-        font-family: Arial, sans-serif;
-    ">
 
-        <h1>SMART WORKSHOP</h1>
-
-        <h2>Admin Dashboard</h2>
-
-        <p id="welcomeMessage">
-            Loading...
-        </p>
-
-        <hr>
-
-        <h3>System Overview</h3>
-
-        <div style="
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 15px;
-        ">
-
-            <div style="
-                padding: 20px;
-                background: white;
-                border-radius: 12px;
-                box-shadow: 0 5px 20px rgba(0,0,0,0.08);
-            ">
-
-                <h3>Students</h3>
-
-                <h2>10</h2>
-
-            </div>
+<div class="admin-layout">
 
 
-            <div style="
-                padding: 20px;
-                background: white;
-                border-radius: 12px;
-                box-shadow: 0 5px 20px rgba(0,0,0,0.08);
-            ">
+    <!-- =====================================================
+         SIDEBAR
+         ===================================================== -->
 
-                <h3>Tools</h3>
-
-                <h2>5</h2>
-
-            </div>
+    <aside class="admin-sidebar">
 
 
-            <div style="
-                padding: 20px;
-                background: white;
-                border-radius: 12px;
-                box-shadow: 0 5px 20px rgba(0,0,0,0.08);
-            ">
+        <div class="sidebar-logo">
 
-                <h3>Available</h3>
+            <h2>
+                SMART WORKSHOP
+            </h2>
 
-                <h2>5</h2>
-
-            </div>
-
-
-            <div style="
-                padding: 20px;
-                background: white;
-                border-radius: 12px;
-                box-shadow: 0 5px 20px rgba(0,0,0,0.08);
-            ">
-
-                <h3>In Use</h3>
-
-                <h2>0</h2>
-
-            </div>
+            <p>
+                Tool Management System
+            </p>
 
         </div>
 
 
-        <br>
+        <nav class="admin-nav">
 
-        <button
-            onclick="logout()"
-            style="
-                padding: 12px 20px;
-                border: none;
-                border-radius: 8px;
-                background: #e53935;
-                color: white;
-                cursor: pointer;
-            "
+
+            <button
+                class="nav-item active"
+                onclick="showDashboard()"
+            >
+                <span class="nav-icon">▣</span>
+                Dashboard
+            </button>
+
+
+            <button
+                class="nav-item"
+                onclick="showStudents()"
+            >
+                <span class="nav-icon">♙</span>
+                Students
+            </button>
+
+
+            <button
+                class="nav-item"
+                onclick="showTools()"
+            >
+                <span class="nav-icon">⚒</span>
+                Tools
+            </button>
+
+
+            <button
+                class="nav-item"
+                onclick="showBorrowings()"
+            >
+                <span class="nav-icon">↔</span>
+                Borrowings
+            </button>
+
+
+            <button
+                class="nav-item"
+                onclick="showHistory()"
+            >
+                <span class="nav-icon">◷</span>
+                History
+            </button>
+
+
+        </nav>
+
+
+        <div class="sidebar-bottom">
+
+
+            <div class="sidebar-user">
+
+                <strong id="sidebarAdminName">
+                    Loading...
+                </strong>
+
+                <span>
+                    Administrator
+                </span>
+
+            </div>
+
+
+            <button
+                id="sidebarLogoutBtn"
+                class="sidebar-logout"
+            >
+                ⎋ &nbsp; Logout
+            </button>
+
+
+        </div>
+
+
+    </aside>
+
+
+
+    <!-- =====================================================
+         MAIN
+         ===================================================== -->
+
+    <main class="admin-main">
+
+
+        <div id="mainContent">
+
+
+            <!-- =================================================
+                 DASHBOARD
+                 ================================================= -->
+
+            <section id="dashboardPage">
+
+
+                <section class="admin-page-header">
+
+                    <h1>
+                        Admin Dashboard
+                    </h1>
+
+                    <p id="welcomeMessage">
+                        Loading administrator information...
+                    </p>
+
+                </section>
+
+
+                <section class="welcome-card">
+
+                    <h2>
+
+                        Welcome,
+
+                        <span id="adminName">
+                            Loading...
+                        </span>
+
+                        👋
+
+                    </h2>
+
+                    <p>
+                        Monitor your workshop tool management system.
+                    </p>
+
+                </section>
+
+
+                <section class="stats-grid">
+
+
+                    <div class="stat-card">
+
+                        <div class="stat-title">
+                            Students
+                        </div>
+
+                        <div
+                            class="stat-number"
+                            id="studentCount"
+                        >
+                            0
+                        </div>
+
+                    </div>
+
+
+                    <div class="stat-card">
+
+                        <div class="stat-title">
+                            Tools
+                        </div>
+
+                        <div
+                            class="stat-number"
+                            id="toolCount"
+                        >
+                            0
+                        </div>
+
+                    </div>
+
+
+                    <div class="stat-card">
+
+                        <div class="stat-title">
+                            Available
+                        </div>
+
+                        <div
+                            class="stat-number"
+                            id="availableCount"
+                        >
+                            0
+                        </div>
+
+                    </div>
+
+
+                    <div class="stat-card">
+
+                        <div class="stat-title">
+                            In Use
+                        </div>
+
+                        <div
+                            class="stat-number"
+                            id="inUseCount"
+                        >
+                            0
+                        </div>
+
+                    </div>
+
+
+                </section>
+
+
+                <section class="dashboard-card">
+
+                    <div class="section-header">
+
+                        <h2>
+                            Active Borrowings
+                        </h2>
+
+                        <p>
+                            Tools currently being used
+                        </p>
+
+                    </div>
+
+
+                    <div id="activeBorrowingsList">
+
+                        <div class="loading">
+                            Loading active borrowings...
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <section class="dashboard-card">
+
+                    <div class="section-header">
+
+                        <h2>
+                            Tool Status
+                        </h2>
+
+                        <p>
+                            Current workshop equipment status
+                        </p>
+
+                    </div>
+
+
+                    <div id="toolStatusList">
+
+                        <div class="loading">
+                            Loading tool status...
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+                <section class="dashboard-card">
+
+                    <div class="section-header">
+
+                        <h2>
+                            Recent Borrowing History
+                        </h2>
+
+                        <p>
+                            Latest workshop tool transactions
+                        </p>
+
+                    </div>
+
+
+                    <div id="historyList">
+
+                        <div class="loading">
+                            Loading borrowing history...
+                        </div>
+
+                    </div>
+
+                </section>
+
+
+            </section>
+
+
+        </div>
+
+
+    </main>
+
+
+</div>
+
+
+
+<!-- =========================================================
+     RETURN TOOL MODAL
+     ========================================================= -->
+
+<div
+    id="returnModal"
+    class="modal-overlay"
+>
+
+    <div class="modal-box">
+
+        <div class="modal-header">
+
+            <h2>
+                Return Tool
+            </h2>
+
+            <button
+                class="close-btn"
+                onclick="closeReturnModal()"
+            >
+                ×
+            </button>
+
+        </div>
+
+        <div class="modal-form-group">
+
+            <label>
+                Tool
+            </label>
+
+            <input
+                type="text"
+                id="returnToolName"
+                readonly
+            >
+
+        </div>
+
+        <div class="modal-form-group">
+
+            <label>
+                Returned By
+            </label>
+
+            <select
+                id="returnedByStudent"
+                style="width:100%;height:44px;padding:0 13px;border:1px solid #d1d5db;border-radius:9px;font-size:14px;outline:none;background:#fff;"
+            ></select>
+
+        </div>
+
+        <input
+            type="hidden"
+            id="returnToolDbId"
         >
-            LOGOUT
-        </button>
+
+        <div
+            id="returnMessage"
+            class="modal-message"
+        ></div>
+
+        <div class="modal-actions">
+
+            <button
+                type="button"
+                class="modal-cancel"
+                onclick="closeReturnModal()"
+            >
+                Cancel
+            </button>
+
+            <button
+                type="button"
+                class="modal-submit"
+                onclick="confirmReturnTool()"
+            >
+                Confirm Return
+            </button>
+
+        </div>
 
     </div>
 
+</div>
 
-    <script>
 
-        const userData =
-            localStorage.getItem(
-                "smartWorkshopUser"
+<!-- =========================================================
+     ADD / EDIT STUDENT MODAL
+     ========================================================= -->
+
+<div
+    id="studentModal"
+    class="modal-overlay"
+>
+
+
+    <div class="modal-box">
+
+
+        <div class="modal-header">
+
+            <h2 id="studentModalTitle">
+                Add Student
+            </h2>
+
+
+            <button
+                class="close-btn"
+                onclick="closeStudentModal()"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <form id="studentForm">
+
+
+            <input
+                type="hidden"
+                id="editStudentId"
+            >
+
+
+            <div class="modal-form-group">
+
+                <label>
+                    RFID UID
+                </label>
+
+                <input
+                    type="text"
+                    id="studentRfid"
+                    placeholder="Example: 04A1B2C3"
+                    required
+                >
+
+            </div>
+
+
+            <div class="modal-form-group">
+
+                <label>
+                    Username
+                </label>
+
+                <input
+                    type="text"
+                    id="studentUsername"
+                    placeholder="Example: farhan"
+                    required
+                >
+
+            </div>
+
+
+            <div class="modal-form-group">
+
+                <label>
+                    Full Name
+                </label>
+
+                <input
+                    type="text"
+                    id="studentFullName"
+                    placeholder="Example: Farhan"
+                    required
+                >
+
+            </div>
+
+
+            <div class="modal-form-group">
+
+                <label>
+                    Class
+                </label>
+
+                <input
+                    type="text"
+                    id="studentClass"
+                    placeholder="Example: 2 DVM CTP"
+                    required
+                >
+
+            </div>
+
+
+            <div class="modal-form-group">
+
+                <label>
+                    Password
+                </label>
+
+                <input
+                    type="password"
+                    id="studentPassword"
+                    placeholder="For new student / leave blank when editing"
+                >
+
+            </div>
+
+
+            <p
+                id="studentPasswordNote"
+                class="modal-form-note"
+            >
+                Password is required when creating a new student.
+            </p>
+
+
+            <div
+                id="studentMessage"
+                class="modal-message"
+            ></div>
+
+
+            <div class="modal-actions">
+
+                <button
+                    type="button"
+                    class="modal-cancel"
+                    onclick="closeStudentModal()"
+                >
+                    Cancel
+                </button>
+
+
+                <button
+                    type="submit"
+                    class="modal-submit"
+                >
+                    Add Student
+                </button>
+
+            </div>
+
+
+        </form>
+
+
+    </div>
+
+</div>
+
+
+
+<!-- =========================================================
+     ADD / EDIT TOOL MODAL
+     ========================================================= -->
+
+<div
+    id="toolModal"
+    class="modal-overlay"
+>
+
+
+    <div class="modal-box">
+
+
+        <div class="modal-header">
+
+            <h2 id="toolModalTitle">
+                Add Tool
+            </h2>
+
+
+            <button
+                class="close-btn"
+                onclick="closeToolModal()"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <form id="toolForm">
+
+
+            <input
+                type="hidden"
+                id="editToolDbId"
+            >
+
+
+            <div class="modal-form-group">
+
+                <label>
+                    RFID UID
+                </label>
+
+                <input
+                    type="text"
+                    id="toolRfid"
+                    placeholder="Example: 0A11BB22"
+                    required
+                >
+
+            </div>
+
+
+            <div class="modal-form-group">
+
+                <label>
+                    Tool ID
+                </label>
+
+                <input
+                    type="text"
+                    id="toolId"
+                    placeholder="Example: DRILL-04"
+                    required
+                >
+
+            </div>
+
+
+            <div class="modal-form-group">
+
+                <label>
+                    Tool Name
+                </label>
+
+                <input
+                    type="text"
+                    id="toolName"
+                    placeholder="Example: Cordless Drill"
+                    required
+                >
+
+            </div>
+
+
+            <div
+                id="toolMessage"
+                class="modal-message"
+            ></div>
+
+
+            <div class="modal-actions">
+
+                <button
+                    type="button"
+                    class="modal-cancel"
+                    onclick="closeToolModal()"
+                >
+                    Cancel
+                </button>
+
+
+                <button
+                    type="submit"
+                    class="modal-submit"
+                >
+                    Add Tool
+                </button>
+
+            </div>
+
+
+        </form>
+
+
+    </div>
+
+</div>
+
+
+
+<script>
+
+
+    /* =====================================================
+       SUPABASE
+       ===================================================== */
+
+    const SUPABASE_URL =
+        "https://tleawentwrxpqvvmmcut.supabase.co";
+
+
+    const SUPABASE_KEY =
+        "sb_publishable_awGWhy1V3Awozve8uSE_IQ_uliP2yGC";
+
+
+    const supabaseClient =
+        supabase.createClient(
+            SUPABASE_URL,
+            SUPABASE_KEY
+        );
+
+
+
+    /* =====================================================
+       LOGIN CHECK
+       ===================================================== */
+
+    const savedUser =
+        localStorage.getItem(
+            "smartWorkshopUser"
+        );
+
+
+    if (!savedUser) {
+
+        window.location.href =
+            "../login.html";
+
+    }
+
+
+    let currentUser;
+
+
+    try {
+
+        currentUser =
+            JSON.parse(savedUser);
+
+    } catch (error) {
+
+        console.error(
+            "Invalid login data:",
+            error
+        );
+
+        localStorage.removeItem(
+            "smartWorkshopUser"
+        );
+
+        window.location.href =
+            "../login.html";
+
+    }
+
+
+    if (
+        !currentUser ||
+        currentUser.role !== "admin"
+    ) {
+
+        localStorage.removeItem(
+            "smartWorkshopUser"
+        );
+
+        alert(
+            "Access denied."
+        );
+
+        window.location.href =
+            "../login.html";
+
+    }
+
+
+
+    /* =====================================================
+       ADMIN INFO
+       ===================================================== */
+
+    document.getElementById(
+        "adminName"
+    ).textContent =
+        currentUser.full_name ||
+        currentUser.username;
+
+
+    document.getElementById(
+        "sidebarAdminName"
+    ).textContent =
+        currentUser.full_name ||
+        currentUser.username;
+
+
+    document.getElementById(
+        "welcomeMessage"
+    ).textContent =
+        "Administrator account: " +
+        currentUser.username;
+
+
+
+    /* =====================================================
+       NAVIGATION
+       ===================================================== */
+
+    function setActiveNav(button) {
+
+        document
+            .querySelectorAll(".nav-item")
+            .forEach(
+                item => {
+
+                    item.classList.remove(
+                        "active"
+                    );
+
+                }
             );
 
 
-        if (!userData) {
+        if (button) {
 
-            window.location.href =
-                "../login.html";
+            button.classList.add(
+                "active"
+            );
 
         }
-        else {
 
-            const user =
-                JSON.parse(userData);
+    }
 
 
-            if (user.role !== "admin") {
+    function showDashboard() {
+
+        window.location.reload();
+
+    }
+
+
+    /* =====================================================
+       STUDENTS PAGE
+       ===================================================== */
+
+    function showStudents() {
+
+        const buttons =
+            document.querySelectorAll(
+                ".nav-item"
+            );
+
+
+        setActiveNav(
+            buttons[1]
+        );
+
+
+        document.getElementById(
+            "mainContent"
+        ).innerHTML = `
+
+            <section class="admin-page-header">
+
+                <h1>
+                    Student Management
+                </h1>
+
+                <p>
+                    Manage student accounts and RFID cards.
+                </p>
+
+            </section>
+
+
+            <div class="management-actions">
+
+                <div>
+
+                    <button
+                        class="action-btn"
+                        onclick="openAddStudentModal()"
+                    >
+                        + Add Student
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <section class="dashboard-card">
+
+                <div
+                    id="studentManagementList"
+                    class="loading"
+                >
+                    Loading students...
+                </div>
+
+            </section>
+
+        `;
+
+
+        loadStudentsList();
+
+    }
+
+
+
+    /* =====================================================
+       TOOLS PAGE
+       ===================================================== */
+
+    function showTools() {
+
+        const buttons =
+            document.querySelectorAll(
+                ".nav-item"
+            );
+
+
+        setActiveNav(
+            buttons[2]
+        );
+
+
+        document.getElementById(
+            "mainContent"
+        ).innerHTML = `
+
+            <section class="admin-page-header">
+
+                <h1>
+                    Tool Management
+                </h1>
+
+                <p>
+                    Manage workshop equipment and RFID tags.
+                </p>
+
+            </section>
+
+
+            <div class="management-actions">
+
+                <div>
+
+                    <button
+                        class="action-btn"
+                        onclick="openAddToolModal()"
+                    >
+                        + Add Tool
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <section class="dashboard-card">
+
+                <div
+                    id="toolManagementList"
+                    class="loading"
+                >
+                    Loading tools...
+                </div>
+
+            </section>
+
+        `;
+
+
+        loadToolsList();
+
+    }
+
+
+
+    /* =====================================================
+       BORROWINGS PAGE
+       ===================================================== */
+
+    async function showBorrowings() {
+
+        const buttons =
+            document.querySelectorAll(
+                ".nav-item"
+            );
+
+
+        setActiveNav(
+            buttons[3]
+        );
+
+
+        document.getElementById(
+            "mainContent"
+        ).innerHTML = `
+
+            <section class="admin-page-header">
+
+                <h1>
+                    Borrowings
+                </h1>
+
+                <p>
+                    Borrow and return workshop tools.
+                </p>
+
+            </section>
+
+
+            <section class="dashboard-card">
+
+                <div class="section-header">
+
+                    <h2>
+                        Borrow Tool
+                    </h2>
+
+                    <p>
+                        Select a student and an available tool.
+                    </p>
+
+                </div>
+
+
+                <form id="borrowForm">
+
+                    <div class="borrow-form-grid">
+
+                        <div class="borrow-field">
+
+                            <label>
+                                Student
+                            </label>
+
+                            <select
+                                id="borrowStudent"
+                                required
+                            >
+                                <option value="">
+                                    Loading students...
+                                </option>
+                            </select>
+
+                        </div>
+
+
+                        <div class="borrow-field">
+
+                            <label>
+                                Tool
+                            </label>
+
+                            <select
+                                id="borrowTool"
+                                required
+                            >
+                                <option value="">
+                                    Loading available tools...
+                                </option>
+                            </select>
+
+                        </div>
+
+
+                        <div>
+
+                            <button
+                                type="submit"
+                                class="borrow-submit"
+                            >
+                                BORROW TOOL
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </form>
+
+
+                <div
+                    id="borrowMessage"
+                    class="borrow-message"
+                ></div>
+
+            </section>
+
+
+            <section class="dashboard-card">
+
+                <div class="section-header">
+
+                    <h2>
+                        Active Borrowings
+                    </h2>
+
+                    <p>
+                        Tools currently in use.
+                    </p>
+
+                </div>
+
+
+                <div
+                    id="borrowingManagementList"
+                    class="loading"
+                >
+                    Loading active borrowings...
+                </div>
+
+            </section>
+
+        `;
+
+
+        document
+            .getElementById("borrowForm")
+            .addEventListener(
+                "submit",
+                handleBorrowSubmit
+            );
+
+
+        await loadBorrowFormData();
+
+        await loadBorrowingManagementList();
+
+    }
+
+
+
+    /* =====================================================
+       BORROW FORM DATA
+       ===================================================== */
+
+    async function loadBorrowFormData() {
+
+        const studentSelect =
+            document.getElementById(
+                "borrowStudent"
+            );
+
+        const toolSelect =
+            document.getElementById(
+                "borrowTool"
+            );
+
+        if (!studentSelect || !toolSelect) {
+            return;
+        }
+
+
+        const {
+            data: students,
+            error: studentError
+        } = await supabaseClient
+            .from("students")
+            .select(
+                "id, username, full_name, class_name"
+            )
+            .order(
+                "full_name",
+                { ascending: true }
+            );
+
+
+        if (studentError) {
+
+            console.error(
+                "Borrow student list error:",
+                studentError
+            );
+
+            studentSelect.innerHTML =
+                `<option value="">Unable to load students</option>`;
+
+        } else {
+
+            studentSelect.innerHTML =
+                `<option value="">Select student</option>` +
+                (students || [])
+                    .map(
+                        student => `
+                            <option value="${student.id}">
+                                ${escapeHtml(student.full_name)} (${escapeHtml(student.username)})
+                            </option>
+                        `
+                    )
+                    .join("");
+
+        }
+
+
+        await refreshBorrowToolOptions();
+
+    }
+
+
+    async function refreshBorrowToolOptions() {
+
+        const toolSelect =
+            document.getElementById(
+                "borrowTool"
+            );
+
+        if (!toolSelect) {
+            return;
+        }
+
+
+        const {
+            data: tools,
+            error
+        } = await supabaseClient
+            .from("tools")
+            .select(
+                "id, tool_id, tool_name, status"
+            )
+            .eq(
+                "status",
+                "AVAILABLE"
+            )
+            .order(
+                "tool_id",
+                { ascending: true }
+            );
+
+
+        if (error) {
+
+            console.error(
+                "Available tool list error:",
+                error
+            );
+
+            toolSelect.innerHTML =
+                `<option value="">Unable to load tools</option>`;
+
+            return;
+
+        }
+
+
+        if (!tools || tools.length === 0) {
+
+            toolSelect.innerHTML =
+                `<option value="">No available tools</option>`;
+
+            return;
+
+        }
+
+
+        toolSelect.innerHTML =
+            `<option value="">Select tool</option>` +
+            tools
+                .map(
+                    tool => `
+                        <option value="${tool.id}">
+                            ${escapeHtml(tool.tool_id)} - ${escapeHtml(tool.tool_name)}
+                        </option>
+                    `
+                )
+                .join("");
+
+    }
+
+
+
+    /* =====================================================
+       BORROW TOOL
+       ===================================================== */
+
+    async function handleBorrowSubmit(event) {
+
+        event.preventDefault();
+
+
+        const studentId =
+            document.getElementById(
+                "borrowStudent"
+            ).value;
+
+        const toolDbId =
+            document.getElementById(
+                "borrowTool"
+            ).value;
+
+        const message =
+            document.getElementById(
+                "borrowMessage"
+            );
+
+
+        message.className =
+            "borrow-message";
+
+        message.textContent =
+            "";
+
+
+        if (!studentId || !toolDbId) {
+
+            message.textContent =
+                "Please select a student and a tool.";
+
+            message.className =
+                "borrow-message error";
+
+            return;
+
+        }
+
+
+        const {
+            data,
+            error
+        } = await supabaseClient
+            .rpc(
+                "borrow_tool",
+                {
+                    p_student_id: Number(studentId),
+                    p_tool_db_id: Number(toolDbId)
+                }
+            );
+
+
+        if (error) {
+
+            console.error(
+                "Borrow tool error:",
+                error
+            );
+
+            message.textContent =
+                error.message ||
+                "Unable to borrow tool.";
+
+            message.className =
+                "borrow-message error";
+
+            return;
+
+        }
+
+
+        message.textContent =
+            "Tool borrowed successfully!";
+
+        message.className =
+            "borrow-message success";
+
+
+        document
+            .getElementById(
+                "borrowForm"
+            )
+            .reset();
+
+
+        await refreshBorrowToolOptions();
+
+        await loadBorrowingManagementList();
+
+        await refreshCounts();
+
+    }
+
+
+
+    /* =====================================================
+       ACTIVE BORROWINGS LIST
+       ===================================================== */
+
+    async function loadBorrowingManagementList() {
+
+        const container =
+            document.getElementById(
+                "borrowingManagementList"
+            );
+
+        if (!container) {
+            return;
+        }
+
+
+        container.innerHTML =
+            `<div class="loading">Loading active borrowings...</div>`;
+
+
+        const {
+            data,
+            error
+        } = await supabaseClient
+            .from("borrowings")
+            .select(`
+                id,
+                borrowed_at,
+                borrowed_by,
+                student_id,
+                tool_id,
+                status,
+                students (
+                    id,
+                    username,
+                    full_name,
+                    class_name
+                ),
+                tools (
+                    id,
+                    tool_id,
+                    tool_name,
+                    status
+                )
+            `)
+            .eq(
+                "status",
+                "BORROWED"
+            )
+            .order(
+                "borrowed_at",
+                { ascending: false }
+            );
+
+
+        if (error) {
+
+            console.error(
+                "Active borrowing management error:",
+                error
+            );
+
+            container.innerHTML =
+                `<p>Unable to load active borrowings.</p>`;
+
+            return;
+
+        }
+
+
+        if (!data || data.length === 0) {
+
+            container.innerHTML = `
+                <div class="empty-state">
+                    <h3>No Active Borrowings</h3>
+                    <p>All workshop tools are currently available.</p>
+                </div>
+            `;
+
+            return;
+
+        }
+
+
+        container.className =
+            "management-table-wrap";
+
+
+        container.innerHTML = `
+
+            <table class="management-table">
+
+                <thead>
+                    <tr>
+                        <th>Tool</th>
+                        <th>Borrowed By</th>
+                        <th>Borrowed At</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    ${
+                        data
+                            .map(
+                                record => `
+                                    <tr>
+
+                                        <td>
+                                            <strong>
+                                                ${escapeHtml(record.tools?.tool_id || "-")}
+                                            </strong>
+                                            <br>
+                                            ${escapeHtml(record.tools?.tool_name || "Unknown Tool")}
+                                        </td>
+
+                                        <td>
+                                            ${escapeHtml(record.students?.full_name || record.borrowed_by || "-")}
+                                            <br>
+                                            <small>
+                                                ${escapeHtml(record.students?.username || "-")}
+                                            </small>
+                                        </td>
+
+                                        <td>
+                                            ${formatDate(record.borrowed_at)}
+                                        </td>
+
+                                        <td>
+                                            <span class="status-badge in-use">
+                                                IN USE
+                                            </span>
+                                        </td>
+
+                                        <td>
+                                            <button
+                                                class="return-btn"
+                                                onclick="openReturnModal(${record.tools?.id || record.tool_id}, '${escapeJs(record.tools?.tool_id || "Tool")}')"
+                                            >
+                                                Return
+                                            </button>
+                                        </td>
+
+                                    </tr>
+                                `
+                            )
+                            .join("")
+                    }
+
+                </tbody>
+
+            </table>
+
+        `;
+
+    }
+
+
+
+    /* =====================================================
+       RETURN TOOL MODAL
+       ===================================================== */
+
+    async function openReturnModal(
+        toolDbId,
+        toolLabel
+    ) {
+
+        document.getElementById(
+            "returnToolDbId"
+        ).value = toolDbId;
+
+        document.getElementById(
+            "returnToolName"
+        ).value = toolLabel;
+
+
+        const select =
+            document.getElementById(
+                "returnedByStudent"
+            );
+
+        const message =
+            document.getElementById(
+                "returnMessage"
+            );
+
+        message.className =
+            "modal-message";
+
+        message.textContent =
+            "";
+
+
+        select.innerHTML =
+            `<option value="">Loading students...</option>`;
+
+
+        const {
+            data,
+            error
+        } = await supabaseClient
+            .from("students")
+            .select(
+                "id, username, full_name"
+            )
+            .order(
+                "full_name",
+                { ascending: true }
+            );
+
+
+        if (error) {
+
+            select.innerHTML =
+                `<option value="">Unable to load students</option>`;
+
+        } else {
+
+            select.innerHTML =
+                `<option value="">Select person returning the tool</option>` +
+                (data || [])
+                    .map(
+                        student => `
+                            <option value="${escapeHtml(student.username)}">
+                                ${escapeHtml(student.full_name)} (${escapeHtml(student.username)})
+                            </option>
+                        `
+                    )
+                    .join("");
+
+        }
+
+
+        document
+            .getElementById(
+                "returnModal"
+            )
+            .classList.add(
+                "show"
+            );
+
+    }
+
+
+    function closeReturnModal() {
+
+        document
+            .getElementById(
+                "returnModal"
+            )
+            .classList.remove(
+                "show"
+            );
+
+    }
+
+
+    async function confirmReturnTool() {
+
+        const toolDbId =
+            document.getElementById(
+                "returnToolDbId"
+            ).value;
+
+        const returnedBy =
+            document.getElementById(
+                "returnedByStudent"
+            ).value;
+
+        const message =
+            document.getElementById(
+                "returnMessage"
+            );
+
+
+        message.className =
+            "modal-message";
+
+
+        if (!toolDbId || !returnedBy) {
+
+            message.textContent =
+                "Please select who is returning the tool.";
+
+            message.className =
+                "modal-message error";
+
+            return;
+
+        }
+
+
+        const {
+            data,
+            error
+        } = await supabaseClient
+            .rpc(
+                "return_tool",
+                {
+                    p_tool_db_id: Number(toolDbId),
+                    p_returned_by: returnedBy
+                }
+            );
+
+
+        if (error) {
+
+            console.error(
+                "Return tool error:",
+                error
+            );
+
+            message.textContent =
+                error.message ||
+                "Unable to return tool.";
+
+            message.className =
+                "modal-message error";
+
+            return;
+
+        }
+
+
+        message.textContent =
+            "Tool returned successfully!";
+
+        message.className =
+            "modal-message success";
+
+
+        await loadBorrowingManagementList();
+
+        await refreshBorrowToolOptions();
+
+        await refreshCounts();
+
+
+        setTimeout(
+            closeReturnModal,
+            700
+        );
+
+    }
+
+
+
+    /* =====================================================
+       HISTORY PAGE
+       ===================================================== */
+
+    async function showHistory() {
+
+        const buttons =
+            document.querySelectorAll(
+                ".nav-item"
+            );
+
+        setActiveNav(buttons[4]);
+
+        document.getElementById(
+            "mainContent"
+        ).innerHTML = `
+
+            <section class="admin-page-header">
+
+                <h1>
+                    Borrowing History
+                </h1>
+
+                <p>
+                    View and search all workshop tool transactions.
+                </p>
+
+            </section>
+
+            <section class="dashboard-card">
+
+                <div class="history-filters">
+
+                    <input
+                        type="search"
+                        id="historySearch"
+                        class="history-search"
+                        placeholder="Search student, username, tool, Tool ID or RFID..."
+                    >
+
+                    <select
+                        id="historyStatusFilter"
+                        class="history-filter-select"
+                    >
+                        <option value="ALL">
+                            All Status
+                        </option>
+
+                        <option value="BORROWED">
+                            Borrowed
+                        </option>
+
+                        <option value="RETURNED">
+                            Returned
+                        </option>
+                    </select>
+
+                </div>
+
+                <div
+                    id="historySummary"
+                    class="history-summary"
+                ></div>
+
+                <div
+                    id="fullHistoryList"
+                    class="loading"
+                >
+                    Loading history...
+                </div>
+
+            </section>
+
+        `;
+
+        const searchInput =
+            document.getElementById(
+                "historySearch"
+            );
+
+        const statusFilter =
+            document.getElementById(
+                "historyStatusFilter"
+            );
+
+        searchInput.addEventListener(
+            "input",
+            renderHistoryResults
+        );
+
+        statusFilter.addEventListener(
+            "change",
+            renderHistoryResults
+        );
+
+        await loadFullHistory();
+
+    }
+
+
+    let fullHistoryCache = [];
+
+
+    async function loadFullHistory() {
+
+        const container =
+            document.getElementById(
+                "fullHistoryList"
+            );
+
+        if (!container) {
+            return;
+        }
+
+        container.innerHTML =
+            `<div class="loading">Loading history...</div>`;
+
+        const {
+            data,
+            error
+        } =
+        await supabaseClient
+            .from("borrowings")
+            .select(`
+                id,
+                borrowed_at,
+                returned_at,
+                borrowed_by,
+                returned_by,
+                status,
+                student_id,
+                tool_id,
+
+                students (
+                    id,
+                    full_name,
+                    username,
+                    class_name,
+                    rfid_uid
+                ),
+
+                tools (
+                    id,
+                    tool_id,
+                    tool_name,
+                    rfid_uid
+                )
+            `)
+            .order(
+                "borrowed_at",
+                {
+                    ascending: false
+                }
+            );
+
+        if (error) {
+
+            console.error(
+                "Full history error:",
+                error
+            );
+
+            container.innerHTML = `
+                <div class="history-empty">
+                    Unable to load borrowing history.
+                </div>
+            `;
+
+            return;
+        }
+
+        fullHistoryCache =
+            data || [];
+
+        renderHistoryResults();
+
+    }
+
+
+    function renderHistoryResults() {
+
+        const container =
+            document.getElementById(
+                "fullHistoryList"
+            );
+
+        const summary =
+            document.getElementById(
+                "historySummary"
+            );
+
+        const searchInput =
+            document.getElementById(
+                "historySearch"
+            );
+
+        const statusFilter =
+            document.getElementById(
+                "historyStatusFilter"
+            );
+
+        if (
+            !container ||
+            !summary ||
+            !searchInput ||
+            !statusFilter
+        ) {
+            return;
+        }
+
+        const search =
+            searchInput.value
+                .trim()
+                .toLowerCase();
+
+        const filter =
+            statusFilter.value;
+
+        const filtered =
+            fullHistoryCache.filter(
+                record => {
+
+                    const student =
+                        record.students || {};
+
+                    const tool =
+                        record.tools || {};
+
+                    const searchableText = [
+                        student.full_name,
+                        student.username,
+                        student.class_name,
+                        student.rfid_uid,
+                        tool.tool_id,
+                        tool.tool_name,
+                        tool.rfid_uid,
+                        record.borrowed_by,
+                        record.returned_by,
+                        record.status
+                    ]
+                    .join(" ")
+                    .toLowerCase();
+
+                    const matchesSearch =
+                        !search ||
+                        searchableText.includes(
+                            search
+                        );
+
+                    const matchesStatus =
+                        filter === "ALL" ||
+                        record.status === filter;
+
+                    return (
+                        matchesSearch &&
+                        matchesStatus
+                    );
+
+                }
+            );
+
+        const total =
+            fullHistoryCache.length;
+
+        const borrowedTotal =
+            fullHistoryCache.filter(
+                record =>
+                    record.status === "BORROWED"
+            ).length;
+
+        const returnedTotal =
+            fullHistoryCache.filter(
+                record =>
+                    record.status === "RETURNED"
+            ).length;
+
+        summary.innerHTML = `
+
+            <span class="history-summary-badge">
+                Total: ${total}
+            </span>
+
+            <span class="history-summary-badge">
+                Borrowed: ${borrowedTotal}
+            </span>
+
+            <span class="history-summary-badge">
+                Returned: ${returnedTotal}
+            </span>
+
+            <span class="history-summary-badge">
+                Showing: ${filtered.length}
+            </span>
+
+        `;
+
+        if (filtered.length === 0) {
+
+            container.innerHTML = `
+
+                <div class="history-empty">
+
+                    <h3>
+                        No matching records
+                    </h3>
+
+                    <p>
+                        Try another search or status filter.
+                    </p>
+
+                </div>
+
+            `;
+
+            return;
+        }
+
+        container.className =
+            "management-table-wrap";
+
+        container.innerHTML = `
+
+            <table class="management-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>Tool</th>
+                        <th>Student</th>
+                        <th>Borrowed By</th>
+                        <th>Borrowed At</th>
+                        <th>Returned By</th>
+                        <th>Returned At</th>
+                        <th>Status</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    ${
+                        filtered
+                            .map(
+                                record => {
+
+                                    const student =
+                                        record.students || {};
+
+                                    const tool =
+                                        record.tools || {};
+
+                                    const statusClass =
+                                        record.status === "BORROWED"
+                                            ? "in-use"
+                                            : "returned";
+
+                                    return `
+
+                                        <tr>
+
+                                            <td>
+
+                                                <strong>
+                                                    ${escapeHtml(
+                                                        tool.tool_id ||
+                                                        "-"
+                                                    )}
+                                                </strong>
+
+                                                <br>
+
+                                                ${escapeHtml(
+                                                    tool.tool_name ||
+                                                    "Unknown Tool"
+                                                )}
+
+                                            </td>
+
+                                            <td>
+
+                                                <strong>
+                                                    ${escapeHtml(
+                                                        student.full_name ||
+                                                        "-"
+                                                    )}
+                                                </strong>
+
+                                                <br>
+
+                                                ${escapeHtml(
+                                                    student.username ||
+                                                    "-"
+                                                )}
+
+                                            </td>
+
+                                            <td>
+                                                ${escapeHtml(
+                                                    record.borrowed_by ||
+                                                    "-"
+                                                )}
+                                            </td>
+
+                                            <td>
+                                                ${formatDate(
+                                                    record.borrowed_at
+                                                )}
+                                            </td>
+
+                                            <td>
+                                                ${escapeHtml(
+                                                    record.returned_by ||
+                                                    "-"
+                                                )}
+                                            </td>
+
+                                            <td>
+                                                ${
+                                                    record.returned_at
+                                                        ? formatDate(
+                                                              record.returned_at
+                                                          )
+                                                        : "-"
+                                                }
+                                            </td>
+
+                                            <td>
+
+                                                <span
+                                                    class="status-badge ${statusClass}"
+                                                >
+                                                    ${escapeHtml(
+                                                        record.status
+                                                    )}
+                                                </span>
+
+                                            </td>
+
+                                        </tr>
+
+                                    `;
+
+                                }
+                            )
+                            .join("")
+                    }
+
+                </tbody>
+
+            </table>
+
+        `;
+
+    }
+
+
+
+    /* =====================================================
+       COMING SOON
+       ===================================================== */
+
+    function showComingSoon(
+        pageName
+    ) {
+
+        const buttons =
+            document.querySelectorAll(
+                ".nav-item"
+            );
+
+
+        const indexMap = {
+
+            "Borrowings": 3,
+
+            "History": 4
+
+        };
+
+
+        setActiveNav(
+            buttons[indexMap[pageName]]
+        );
+
+
+        document.getElementById(
+            "mainContent"
+        ).innerHTML = `
+
+            <section class="admin-page-header">
+
+                <h1>
+                    ${pageName}
+                </h1>
+
+                <p>
+                    Smart Workshop Admin Panel
+                </p>
+
+            </section>
+
+
+            <section class="coming-soon">
+
+                <h2>
+                    ${pageName} Management
+                </h2>
+
+                <p>
+                    This module will be built next.
+                </p>
+
+            </section>
+
+        `;
+
+    }
+
+
+
+    /* =====================================================
+       STUDENT MODAL
+       ===================================================== */
+
+    function resetStudentModal() {
+
+        document
+            .getElementById(
+                "studentForm"
+            )
+            .reset();
+
+
+        document
+            .getElementById(
+                "editStudentId"
+            )
+            .value = "";
+
+
+        document
+            .getElementById(
+                "studentModalTitle"
+            )
+            .textContent =
+            "Add Student";
+
+
+        document
+            .querySelector(
+                "#studentForm .modal-submit"
+            )
+            .textContent =
+            "Add Student";
+
+
+        document
+            .getElementById(
+                "studentPasswordNote"
+            )
+            .textContent =
+            "Password is required when creating a new student.";
+
+
+        const message =
+            document.getElementById(
+                "studentMessage"
+            );
+
+
+        message.className =
+            "modal-message";
+
+
+        message.textContent =
+            "";
+
+    }
+
+
+    function openAddStudentModal() {
+
+        resetStudentModal();
+
+
+        document
+            .getElementById(
+                "studentModal"
+            )
+            .classList.add(
+                "show"
+            );
+
+    }
+
+
+    function openEditStudentModal(
+        studentId
+    ) {
+
+        const student =
+            studentCache.find(
+                item =>
+                    String(item.id) ===
+                    String(studentId)
+            );
+
+
+        if (!student) {
+
+            alert(
+                "Student data not found."
+            );
+
+            return;
+
+        }
+
+
+        resetStudentModal();
+
+
+        document
+            .getElementById(
+                "studentModalTitle"
+            )
+            .textContent =
+            "Edit Student";
+
+
+        document
+            .querySelector(
+                "#studentForm .modal-submit"
+            )
+            .textContent =
+            "Save Changes";
+
+
+        document
+            .getElementById(
+                "editStudentId"
+            )
+            .value =
+            student.id;
+
+
+        document
+            .getElementById(
+                "studentRfid"
+            )
+            .value =
+            student.rfid_uid || "";
+
+
+        document
+            .getElementById(
+                "studentUsername"
+            )
+            .value =
+            student.username || "";
+
+
+        document
+            .getElementById(
+                "studentFullName"
+            )
+            .value =
+            student.full_name || "";
+
+
+        document
+            .getElementById(
+                "studentClass"
+            )
+            .value =
+            student.class_name || "";
+
+
+        document
+            .getElementById(
+                "studentPasswordNote"
+            )
+            .textContent =
+            "Leave password blank to keep the current password.";
+
+
+        document
+            .getElementById(
+                "studentModal"
+            )
+            .classList.add(
+                "show"
+            );
+
+    }
+
+
+    function closeStudentModal() {
+
+        document
+            .getElementById(
+                "studentModal"
+            )
+            .classList.remove(
+                "show"
+            );
+
+    }
+
+
+
+    /* =====================================================
+       TOOL MODAL
+       ===================================================== */
+
+    function resetToolModal() {
+
+        document
+            .getElementById(
+                "toolForm"
+            )
+            .reset();
+
+
+        document
+            .getElementById(
+                "editToolDbId"
+            )
+            .value = "";
+
+
+        document
+            .getElementById(
+                "toolModalTitle"
+            )
+            .textContent =
+            "Add Tool";
+
+
+        document
+            .querySelector(
+                "#toolForm .modal-submit"
+            )
+            .textContent =
+            "Add Tool";
+
+
+        const message =
+            document.getElementById(
+                "toolMessage"
+            );
+
+
+        message.className =
+            "modal-message";
+
+
+        message.textContent =
+            "";
+
+    }
+
+
+    function openAddToolModal() {
+
+        resetToolModal();
+
+
+        document
+            .getElementById(
+                "toolModal"
+            )
+            .classList.add(
+                "show"
+            );
+
+    }
+
+
+    function openEditToolModal(
+        toolDbId
+    ) {
+
+        const tool =
+            toolCache.find(
+                item =>
+                    String(item.id) ===
+                    String(toolDbId)
+            );
+
+
+        if (!tool) {
+
+            alert(
+                "Tool data not found."
+            );
+
+            return;
+
+        }
+
+
+        resetToolModal();
+
+
+        document
+            .getElementById(
+                "toolModalTitle"
+            )
+            .textContent =
+            "Edit Tool";
+
+
+        document
+            .querySelector(
+                "#toolForm .modal-submit"
+            )
+            .textContent =
+            "Save Changes";
+
+
+        document
+            .getElementById(
+                "editToolDbId"
+            )
+            .value =
+            tool.id;
+
+
+        document
+            .getElementById(
+                "toolRfid"
+            )
+            .value =
+            tool.rfid_uid || "";
+
+
+        document
+            .getElementById(
+                "toolId"
+            )
+            .value =
+            tool.tool_id || "";
+
+
+        document
+            .getElementById(
+                "toolName"
+            )
+            .value =
+            tool.tool_name || "";
+
+
+        document
+            .getElementById(
+                "toolModal"
+            )
+            .classList.add(
+                "show"
+            );
+
+    }
+
+
+    function closeToolModal() {
+
+        document
+            .getElementById(
+                "toolModal"
+            )
+            .classList.remove(
+                "show"
+            );
+
+    }
+
+
+
+    /* =====================================================
+       CACHE
+       ===================================================== */
+
+    let studentCache = [];
+
+    let toolCache = [];
+
+
+
+    /* =====================================================
+       ADD / EDIT STUDENT
+       ===================================================== */
+
+    document
+        .getElementById(
+            "studentForm"
+        )
+        .addEventListener(
+            "submit",
+            async function(event) {
+
+                event.preventDefault();
+
+
+                const message =
+                    document.getElementById(
+                        "studentMessage"
+                    );
+
+
+                message.className =
+                    "modal-message";
+
+
+                message.textContent =
+                    "";
+
+
+                const studentId =
+                    document.getElementById(
+                        "editStudentId"
+                    ).value;
+
+
+                const rfid =
+                    document.getElementById(
+                        "studentRfid"
+                    ).value
+                    .trim()
+                    .toUpperCase();
+
+
+                const username =
+                    document.getElementById(
+                        "studentUsername"
+                    ).value
+                    .trim()
+                    .toLowerCase();
+
+
+                const fullName =
+                    document.getElementById(
+                        "studentFullName"
+                    ).value
+                    .trim();
+
+
+                const className =
+                    document.getElementById(
+                        "studentClass"
+                    ).value
+                    .trim();
+
+
+                const password =
+                    document.getElementById(
+                        "studentPassword"
+                    ).value;
+
+
+                if (
+                    !rfid ||
+                    !username ||
+                    !fullName ||
+                    !className
+                ) {
+
+                    message.textContent =
+                        "Please fill in all required fields.";
+
+                    message.className =
+                        "modal-message error";
+
+                    return;
+
+                }
+
+
+                /* =========================================
+                   EDIT
+                   ========================================= */
+
+                if (studentId) {
+
+                    try {
+
+                        const {
+                            data,
+                            error
+                        } =
+                        await supabaseClient
+                            .rpc(
+                                "update_student",
+                                {
+                                    p_student_id:
+                                        Number(
+                                            studentId
+                                        ),
+
+                                    p_username:
+                                        username,
+
+                                    p_full_name:
+                                        fullName,
+
+                                    p_class_name:
+                                        className,
+
+                                    p_rfid_uid:
+                                        rfid,
+
+                                    p_password:
+                                        password ||
+                                        null
+                                }
+                            );
+
+
+                        if (error) {
+
+                            console.error(
+                                "Update student error:",
+                                error
+                            );
+
+
+                            message.textContent =
+                                error.message ||
+                                "Unable to update student.";
+
+                            message.className =
+                                "modal-message error";
+
+                            return;
+
+                        }
+
+
+                        message.textContent =
+                            "Student updated successfully!";
+
+                        message.className =
+                            "modal-message success";
+
+
+                        await loadStudentsList();
+
+
+                        setTimeout(
+                            closeStudentModal,
+                            700
+                        );
+
+
+                    } catch (error) {
+
+                        console.error(
+                            error
+                        );
+
+
+                        message.textContent =
+                            "Unexpected error occurred.";
+
+                        message.className =
+                            "modal-message error";
+
+                    }
+
+
+                    return;
+
+                }
+
+
+
+                /* =========================================
+                   ADD
+                   ========================================= */
+
+                if (!password) {
+
+                    message.textContent =
+                        "Password is required for a new student.";
+
+                    message.className =
+                        "modal-message error";
+
+                    return;
+
+                }
+
+
+                try {
+
+                    const {
+                        data,
+                        error
+                    } =
+                    await supabaseClient
+                        .rpc(
+                            "add_student_with_login",
+                            {
+                                p_username:
+                                    username,
+
+                                p_password:
+                                    password,
+
+                                p_full_name:
+                                    fullName,
+
+                                p_class_name:
+                                    className,
+
+                                p_rfid_uid:
+                                    rfid
+                            }
+                        );
+
+
+                    if (error) {
+
+                        console.error(
+                            "Add student error:",
+                            error
+                        );
+
+
+                        message.textContent =
+                            error.message ||
+                            "Unable to add student.";
+
+                        message.className =
+                            "modal-message error";
+
+                        return;
+
+                    }
+
+
+                    message.textContent =
+                        "Student added successfully!";
+
+                    message.className =
+                        "modal-message success";
+
+
+                    document
+                        .getElementById(
+                            "studentForm"
+                        )
+                        .reset();
+
+
+                    await refreshCounts();
+
+
+                    await loadStudentsList();
+
+
+                } catch (error) {
+
+                    console.error(
+                        error
+                    );
+
+
+                    message.textContent =
+                        "Unexpected error occurred.";
+
+                    message.className =
+                        "modal-message error";
+
+                }
+
+            }
+        );
+
+
+
+    /* =====================================================
+       ADD / EDIT TOOL
+       ===================================================== */
+
+    document
+        .getElementById(
+            "toolForm"
+        )
+        .addEventListener(
+            "submit",
+            async function(event) {
+
+                event.preventDefault();
+
+
+                const message =
+                    document.getElementById(
+                        "toolMessage"
+                    );
+
+
+                message.className =
+                    "modal-message";
+
+
+                message.textContent =
+                    "";
+
+
+                const toolDbId =
+                    document.getElementById(
+                        "editToolDbId"
+                    ).value;
+
+
+                const rfid =
+                    document.getElementById(
+                        "toolRfid"
+                    ).value
+                    .trim()
+                    .toUpperCase();
+
+
+                const toolId =
+                    document.getElementById(
+                        "toolId"
+                    ).value
+                    .trim()
+                    .toUpperCase();
+
+
+                const toolName =
+                    document.getElementById(
+                        "toolName"
+                    ).value
+                    .trim();
+
+
+                if (
+                    !rfid ||
+                    !toolId ||
+                    !toolName
+                ) {
+
+                    message.textContent =
+                        "Please fill in all fields.";
+
+                    message.className =
+                        "modal-message error";
+
+                    return;
+
+                }
+
+
+                /* =========================================
+                   EDIT TOOL
+                   ========================================= */
+
+                if (toolDbId) {
+
+                    try {
+
+                        const {
+                            data,
+                            error
+                        } =
+                        await supabaseClient
+                            .rpc(
+                                "update_tool",
+                                {
+                                    p_tool_db_id:
+                                        Number(
+                                            toolDbId
+                                        ),
+
+                                    p_tool_id:
+                                        toolId,
+
+                                    p_tool_name:
+                                        toolName,
+
+                                    p_rfid_uid:
+                                        rfid
+                                }
+                            );
+
+
+                        if (error) {
+
+                            console.error(
+                                "Update tool error:",
+                                error
+                            );
+
+
+                            message.textContent =
+                                error.message ||
+                                "Unable to update tool.";
+
+                            message.className =
+                                "modal-message error";
+
+                            return;
+
+                        }
+
+
+                        message.textContent =
+                            "Tool updated successfully!";
+
+                        message.className =
+                            "modal-message success";
+
+
+                        await loadToolsList();
+
+                        await refreshCounts();
+
+
+                        setTimeout(
+                            closeToolModal,
+                            700
+                        );
+
+
+                    } catch (error) {
+
+                        console.error(
+                            error
+                        );
+
+
+                        message.textContent =
+                            "Unexpected error occurred.";
+
+                        message.className =
+                            "modal-message error";
+
+                    }
+
+
+                    return;
+
+                }
+
+
+
+                /* =========================================
+                   ADD TOOL
+                   ========================================= */
+
+                try {
+
+                    const {
+                        data,
+                        error
+                    } =
+                    await supabaseClient
+                        .rpc(
+                            "add_tool",
+                            {
+                                p_tool_id:
+                                    toolId,
+
+                                p_tool_name:
+                                    toolName,
+
+                                p_rfid_uid:
+                                    rfid
+                            }
+                        );
+
+
+                    if (error) {
+
+                        console.error(
+                            "Add tool error:",
+                            error
+                        );
+
+
+                        message.textContent =
+                            error.message ||
+                            "Unable to add tool.";
+
+                        message.className =
+                            "modal-message error";
+
+                        return;
+
+                    }
+
+
+                    message.textContent =
+                        "Tool added successfully!";
+
+                    message.className =
+                        "modal-message success";
+
+
+                    document
+                        .getElementById(
+                            "toolForm"
+                        )
+                        .reset();
+
+
+                    await refreshCounts();
+
+
+                    await loadToolsList();
+
+
+                } catch (error) {
+
+                    console.error(
+                        error
+                    );
+
+
+                    message.textContent =
+                        "Unexpected error occurred.";
+
+                    message.className =
+                        "modal-message error";
+
+                }
+
+            }
+        );
+
+
+
+    /* =====================================================
+       DELETE STUDENT
+       ===================================================== */
+
+    async function deleteStudent(
+        studentId,
+        studentName
+    ) {
+
+        const confirmed =
+            confirm(
+                "Delete student \"" +
+                studentName +
+                "\"?"
+            );
+
+
+        if (!confirmed) {
+
+            return;
+
+        }
+
+
+        try {
+
+            const {
+                data,
+                error
+            } =
+            await supabaseClient
+                .rpc(
+                    "delete_student",
+                    {
+                        p_student_id:
+                            Number(
+                                studentId
+                            )
+                    }
+                );
+
+
+            if (error) {
 
                 alert(
-                    "Access denied."
+                    error.message ||
+                    "Unable to delete student."
                 );
+
+                console.error(
+                    "Delete student error:",
+                    error
+                );
+
+                return;
+
+            }
+
+
+            alert(
+                "Student deleted successfully."
+            );
+
+
+            await refreshCounts();
+
+            await loadStudentsList();
+
+
+        } catch (error) {
+
+            console.error(
+                error
+            );
+
+            alert(
+                "Unexpected error occurred."
+            );
+
+        }
+
+    }
+
+
+
+    /* =====================================================
+       DELETE TOOL
+       ===================================================== */
+
+    async function deleteTool(
+        toolDbId,
+        toolName
+    ) {
+
+        const confirmed =
+            confirm(
+                "Delete tool \"" +
+                toolName +
+                "\"?"
+            );
+
+
+        if (!confirmed) {
+
+            return;
+
+        }
+
+
+        try {
+
+            const {
+                data,
+                error
+            } =
+            await supabaseClient
+                .rpc(
+                    "delete_tool",
+                    {
+                        p_tool_db_id:
+                            Number(
+                                toolDbId
+                            )
+                    }
+                );
+
+
+            if (error) {
+
+                alert(
+                    error.message ||
+                    "Unable to delete tool."
+                );
+
+                console.error(
+                    "Delete tool error:",
+                    error
+                );
+
+                return;
+
+            }
+
+
+            alert(
+                "Tool deleted successfully."
+            );
+
+
+            await refreshCounts();
+
+            await loadToolsList();
+
+
+        } catch (error) {
+
+            console.error(
+                error
+            );
+
+            alert(
+                "Unexpected error occurred."
+            );
+
+        }
+
+    }
+
+
+
+    /* =====================================================
+       LOAD STUDENT LIST
+       ===================================================== */
+
+    async function loadStudentsList() {
+
+        const container =
+            document.getElementById(
+                "studentManagementList"
+            );
+
+
+        if (!container) {
+
+            return;
+
+        }
+
+
+        container.innerHTML =
+            `<div class="loading">Loading students...</div>`;
+
+
+        const {
+            data,
+            error
+        } =
+        await supabaseClient
+
+            .from("students")
+
+            .select(
+                "id, username, full_name, class_name, rfid_uid"
+            )
+
+            .order(
+                "full_name",
+                {
+                    ascending: true
+                }
+            );
+
+
+        if (error) {
+
+            console.error(
+                "Student list error:",
+                error
+            );
+
+
+            container.innerHTML =
+                `<p>Unable to load students.</p>`;
+
+            return;
+
+        }
+
+
+        studentCache =
+            data || [];
+
+
+        if (
+            studentCache.length === 0
+        ) {
+
+            container.innerHTML = `
+
+                <div class="empty-state">
+
+                    <h3>
+                        No students found
+                    </h3>
+
+                    <p>
+                        Add a student to begin.
+                    </p>
+
+                </div>
+
+            `;
+
+            return;
+
+        }
+
+
+        container.className =
+            "management-table-wrap";
+
+
+        container.innerHTML = `
+
+            <table class="management-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Name
+                        </th>
+
+                        <th>
+                            Username
+                        </th>
+
+                        <th>
+                            Class
+                        </th>
+
+                        <th>
+                            RFID UID
+                        </th>
+
+                        <th>
+                            Action
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    ${
+                        studentCache
+                            .map(
+                                student => `
+
+                                    <tr>
+
+                                        <td>
+
+                                            <strong>
+                                                ${escapeHtml(
+                                                    student.full_name
+                                                )}
+                                            </strong>
+
+                                        </td>
+
+
+                                        <td>
+                                            ${escapeHtml(
+                                                student.username
+                                            )}
+                                        </td>
+
+
+                                        <td>
+                                            ${escapeHtml(
+                                                student.class_name ||
+                                                "-"
+                                            )}
+                                        </td>
+
+
+                                        <td>
+                                            ${escapeHtml(
+                                                student.rfid_uid ||
+                                                "-"
+                                            )}
+                                        </td>
+
+
+                                        <td>
+
+                                            <div class="table-actions">
+
+                                                <button
+                                                    class="edit-btn"
+                                                    onclick="openEditStudentModal(${student.id})"
+                                                >
+                                                    Edit
+                                                </button>
+
+
+                                                <button
+                                                    class="delete-btn"
+                                                    onclick="deleteStudent(${student.id}, '${escapeJs(student.full_name)}')"
+                                                >
+                                                    Delete
+                                                </button>
+
+                                            </div>
+
+                                        </td>
+
+                                    </tr>
+
+                                `
+                            )
+                            .join("")
+                    }
+
+                </tbody>
+
+            </table>
+
+        `;
+
+    }
+
+
+
+    /* =====================================================
+       LOAD TOOL LIST
+       ===================================================== */
+
+    async function loadToolsList() {
+
+        const container =
+            document.getElementById(
+                "toolManagementList"
+            );
+
+
+        if (!container) {
+
+            return;
+
+        }
+
+
+        container.innerHTML =
+            `<div class="loading">Loading tools...</div>`;
+
+
+        const {
+            data,
+            error
+        } =
+        await supabaseClient
+
+            .from("tools")
+
+            .select(
+                "id, tool_id, tool_name, rfid_uid, status"
+            )
+
+            .order(
+                "tool_id",
+                {
+                    ascending: true
+                }
+            );
+
+
+        if (error) {
+
+            console.error(
+                "Tool list error:",
+                error
+            );
+
+
+            container.innerHTML =
+                `<p>Unable to load tools.</p>`;
+
+            return;
+
+        }
+
+
+        toolCache =
+            data || [];
+
+
+        if (
+            toolCache.length === 0
+        ) {
+
+            container.innerHTML = `
+
+                <div class="empty-state">
+
+                    <h3>
+                        No tools found
+                    </h3>
+
+                    <p>
+                        Add a tool to begin.
+                    </p>
+
+                </div>
+
+            `;
+
+            return;
+
+        }
+
+
+        container.className =
+            "management-table-wrap";
+
+
+        container.innerHTML = `
+
+            <table class="management-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Tool ID
+                        </th>
+
+                        <th>
+                            Tool Name
+                        </th>
+
+                        <th>
+                            RFID UID
+                        </th>
+
+                        <th>
+                            Status
+                        </th>
+
+                        <th>
+                            Action
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    ${
+                        toolCache
+                            .map(
+                                tool => {
+
+                                    const statusClass =
+                                        tool.status === "IN USE"
+                                            ? "in-use"
+                                            : "available";
+
+
+                                    return `
+
+                                        <tr>
+
+                                            <td>
+
+                                                <strong>
+                                                    ${escapeHtml(
+                                                        tool.tool_id
+                                                    )}
+                                                </strong>
+
+                                            </td>
+
+
+                                            <td>
+                                                ${escapeHtml(
+                                                    tool.tool_name
+                                                )}
+                                            </td>
+
+
+                                            <td>
+                                                ${escapeHtml(
+                                                    tool.rfid_uid
+                                                )}
+                                            </td>
+
+
+                                            <td>
+
+                                                <span
+                                                    class="status-badge ${statusClass}"
+                                                >
+                                                    ${escapeHtml(
+                                                        tool.status
+                                                    )}
+                                                </span>
+
+                                            </td>
+
+
+                                            <td>
+
+                                                <div class="table-actions">
+
+                                                    <button
+                                                        class="edit-btn"
+                                                        onclick="openEditToolModal(${tool.id})"
+                                                    >
+                                                        Edit
+                                                    </button>
+
+
+                                                    <button
+                                                        class="delete-btn"
+                                                        onclick="deleteTool(${tool.id}, '${escapeJs(tool.tool_name)}')"
+                                                    >
+                                                        Delete
+                                                    </button>
+
+                                                </div>
+
+                                            </td>
+
+                                        </tr>
+
+                                    `;
+
+                                }
+                            )
+                            .join("")
+                    }
+
+                </tbody>
+
+            </table>
+
+        `;
+
+    }
+
+
+
+    /* =====================================================
+       DASHBOARD COUNTS
+       ===================================================== */
+
+    async function refreshCounts() {
+
+        const {
+            count: studentCount,
+            error: studentError
+        } =
+        await supabaseClient
+            .from("students")
+            .select(
+                "*",
+                {
+                    count: "exact",
+                    head: true
+                }
+            );
+
+
+        if (studentError) {
+
+            console.error(
+                "Student count error:",
+                studentError
+            );
+
+        }
+
+
+        const {
+            data: tools,
+            error: toolsError
+        } =
+        await supabaseClient
+            .from("tools")
+            .select("status");
+
+
+        if (toolsError) {
+
+            console.error(
+                "Tool count error:",
+                toolsError
+            );
+
+        }
+
+
+        const studentCountElement =
+            document.getElementById(
+                "studentCount"
+            );
+
+        const toolCountElement =
+            document.getElementById(
+                "toolCount"
+            );
+
+        const availableCountElement =
+            document.getElementById(
+                "availableCount"
+            );
+
+        const inUseCountElement =
+            document.getElementById(
+                "inUseCount"
+            );
+
+
+        if (studentCountElement) {
+
+            studentCountElement.textContent =
+                studentCount || 0;
+
+        }
+
+
+        if (tools) {
+
+            const totalTools =
+                tools.length;
+
+            const availableTools =
+                tools.filter(
+                    tool =>
+                        tool.status === "AVAILABLE"
+                ).length;
+
+            const inUseTools =
+                tools.filter(
+                    tool =>
+                        tool.status === "IN USE"
+                ).length;
+
+
+            if (toolCountElement) {
+
+                toolCountElement.textContent =
+                    totalTools;
+
+            }
+
+
+            if (availableCountElement) {
+
+                availableCountElement.textContent =
+                    availableTools;
+
+            }
+
+
+            if (inUseCountElement) {
+
+                inUseCountElement.textContent =
+                    inUseTools;
+
+            }
+
+        }
+
+    }
+
+
+
+    /* =====================================================
+       DASHBOARD OVERVIEW
+       ===================================================== */
+
+    async function loadOverview() {
+
+        await refreshCounts();
+
+
+        const {
+            data: tools,
+            error: toolsError
+        } =
+        await supabaseClient
+
+            .from("tools")
+
+            .select(
+                "id, tool_id, tool_name, status"
+            );
+
+
+        if (toolsError) {
+
+            console.error(
+                toolsError
+            );
+
+        }
+
+
+        const availableTools =
+            (tools || []).filter(
+                tool =>
+                    tool.status === "AVAILABLE"
+            );
+
+
+        const usedTools =
+            (tools || []).filter(
+                tool =>
+                    tool.status === "IN USE"
+            );
+
+
+        document.getElementById(
+            "toolCount"
+        ).textContent =
+            (tools || []).length;
+
+
+        document.getElementById(
+            "availableCount"
+        ).textContent =
+            availableTools.length;
+
+
+        document.getElementById(
+            "inUseCount"
+        ).textContent =
+            usedTools.length;
+
+    }
+
+
+
+    /* =====================================================
+       ACTIVE BORROWINGS
+       ===================================================== */
+
+    async function loadActiveBorrowings() {
+
+        const {
+            data,
+            error
+        } =
+        await supabaseClient
+
+            .from("borrowings")
+
+            .select(`
+
+                id,
+                student_id,
+                tool_id,
+                borrowed_at,
+                borrowed_by,
+                status,
+
+                students (
+                    username,
+                    full_name,
+                    class_name
+                ),
+
+                tools (
+                    tool_id,
+                    tool_name,
+                    status
+                )
+
+            `)
+
+            .eq(
+                "status",
+                "BORROWED"
+            )
+
+            .order(
+                "borrowed_at",
+                {
+                    ascending: false
+                }
+            );
+
+
+        const container =
+            document.getElementById(
+                "activeBorrowingsList"
+            );
+
+
+        if (error) {
+
+            console.error(
+                error
+            );
+
+
+            container.innerHTML =
+                `<p>Unable to load active borrowings.</p>`;
+
+            return;
+
+        }
+
+
+        if (
+            !data ||
+            data.length === 0
+        ) {
+
+            container.innerHTML = `
+
+                <div class="empty-state">
+
+                    <h3>
+                        No Active Borrowings
+                    </h3>
+
+                    <p>
+                        All workshop tools are currently available.
+                    </p>
+
+                </div>
+
+            `;
+
+            return;
+
+        }
+
+
+        container.innerHTML =
+            data
+                .map(
+                    record => {
+
+                        const student =
+                            record.students;
+
+                        const tool =
+                            record.tools;
+
+
+                        return `
+
+                            <div class="history-row">
+
+                                <div>
+
+                                    <strong>
+                                        ${
+                                            tool?.tool_id ||
+                                            "-"
+                                        }
+                                    </strong>
+
+                                    <p>
+                                        ${
+                                            tool?.tool_name ||
+                                            "Unknown Tool"
+                                        }
+                                    </p>
+
+                                </div>
+
+
+                                <div>
+
+                                    <p>
+                                        Borrowed By:
+                                        ${
+                                            student?.full_name ||
+                                            record.borrowed_by ||
+                                            "-"
+                                        }
+                                    </p>
+
+                                    <p>
+                                        Username:
+                                        ${
+                                            student?.username ||
+                                            "-"
+                                        }
+                                    </p>
+
+                                    <p>
+                                        Time:
+                                        ${
+                                            formatDate(
+                                                record.borrowed_at
+                                            )
+                                        }
+                                    </p>
+
+                                </div>
+
+
+                                <div>
+
+                                    <span
+                                        class="status-badge in-use"
+                                    >
+                                        IN USE
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+                        `;
+
+                    }
+                )
+                .join("");
+
+    }
+
+
+
+    /* =====================================================
+       TOOL STATUS
+       ===================================================== */
+
+    async function loadToolStatus() {
+
+        const {
+            data,
+            error
+        } =
+        await supabaseClient
+
+            .from("tools")
+
+            .select(
+                "tool_id, tool_name, rfid_uid, status"
+            )
+
+            .order(
+                "tool_id",
+                {
+                    ascending: true
+                }
+            );
+
+
+        const container =
+            document.getElementById(
+                "toolStatusList"
+            );
+
+
+        if (error) {
+
+            console.error(
+                error
+            );
+
+
+            container.innerHTML =
+                `<p>Unable to load tool status.</p>`;
+
+            return;
+
+        }
+
+
+        if (
+            !data ||
+            data.length === 0
+        ) {
+
+            container.innerHTML = `
+
+                <div class="empty-state">
+
+                    <h3>
+                        No tools found
+                    </h3>
+
+                </div>
+
+            `;
+
+            return;
+
+        }
+
+
+        container.innerHTML =
+            data
+                .map(
+                    tool => {
+
+                        const statusClass =
+                            tool.status === "IN USE"
+                                ? "in-use"
+                                : "available";
+
+
+                        return `
+
+                            <div class="tool-row">
+
+                                <div>
+
+                                    <strong>
+                                        ${tool.tool_id}
+                                    </strong>
+
+                                    <p>
+                                        ${tool.tool_name}
+                                    </p>
+
+                                </div>
+
+
+                                <div>
+
+                                    <span
+                                        class="status-badge ${statusClass}"
+                                    >
+                                        ${tool.status}
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+                        `;
+
+                    }
+                )
+                .join("");
+
+    }
+
+
+
+    /* =====================================================
+       HISTORY
+       ===================================================== */
+
+    async function loadHistory() {
+
+        const {
+            data,
+            error
+        } =
+        await supabaseClient
+
+            .from("borrowings")
+
+            .select(`
+
+                id,
+                borrowed_at,
+                returned_at,
+                borrowed_by,
+                returned_by,
+                status,
+
+                students (
+                    full_name,
+                    username
+                ),
+
+                tools (
+                    tool_id,
+                    tool_name
+                )
+
+            `)
+
+            .order(
+                "borrowed_at",
+                {
+                    ascending: false
+                }
+            )
+
+            .limit(10);
+
+
+        const container =
+            document.getElementById(
+                "historyList"
+            );
+
+
+        if (error) {
+
+            console.error(
+                error
+            );
+
+
+            container.innerHTML =
+                `<p>Unable to load borrowing history.</p>`;
+
+            return;
+
+        }
+
+
+        if (
+            !data ||
+            data.length === 0
+        ) {
+
+            container.innerHTML = `
+
+                <div class="empty-state">
+
+                    <h3>
+                        No Borrowing History
+                    </h3>
+
+                    <p>
+                        Borrowing transactions will appear here.
+                    </p>
+
+                </div>
+
+            `;
+
+            return;
+
+        }
+
+
+        container.innerHTML =
+            data
+                .map(
+                    record => {
+
+                        const student =
+                            record.students;
+
+                        const tool =
+                            record.tools;
+
+
+                        const statusClass =
+                            record.status === "BORROWED"
+                                ? "in-use"
+                                : "returned";
+
+
+                        return `
+
+                            <div class="history-row">
+
+                                <div>
+
+                                    <strong>
+                                        ${
+                                            tool?.tool_id ||
+                                            "-"
+                                        }
+                                    </strong>
+
+                                    <p>
+                                        ${
+                                            tool?.tool_name ||
+                                            "Unknown Tool"
+                                        }
+                                    </p>
+
+                                </div>
+
+
+                                <div>
+
+                                    <p>
+                                        Student:
+                                        ${
+                                            student?.full_name ||
+                                            "-"
+                                        }
+                                    </p>
+
+                                    <p>
+                                        Borrowed:
+                                        ${
+                                            formatDate(
+                                                record.borrowed_at
+                                            )
+                                        }
+                                    </p>
+
+                                    <p>
+                                        Returned:
+                                        ${
+                                            record.returned_at
+                                                ? formatDate(
+                                                      record.returned_at
+                                                  )
+                                                : "-"
+                                        }
+                                    </p>
+
+                                    <p>
+                                        Returned By:
+                                        ${
+                                            record.returned_by ||
+                                            "-"
+                                        }
+                                    </p>
+
+                                </div>
+
+
+                                <div>
+
+                                    <span
+                                        class="status-badge ${statusClass}"
+                                    >
+                                        ${record.status}
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+                        `;
+
+                    }
+                )
+                .join("");
+
+    }
+
+
+
+    /* =====================================================
+       DATE
+       ===================================================== */
+
+    function formatDate(
+        dateString
+    ) {
+
+        if (!dateString) {
+
+            return "-";
+
+        }
+
+
+        return new Date(
+            dateString
+        ).toLocaleString(
+            "en-MY",
+            {
+                dateStyle: "medium",
+                timeStyle: "short"
+            }
+        );
+
+    }
+
+
+
+    /* =====================================================
+       ESCAPE HTML
+       ===================================================== */
+
+    function escapeHtml(
+        value
+    ) {
+
+        return String(
+            value ?? ""
+        )
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+    }
+
+
+
+    /* =====================================================
+       ESCAPE JAVASCRIPT STRING
+       ===================================================== */
+
+    function escapeJs(
+        value
+    ) {
+
+        return String(
+            value ?? ""
+        )
+        .replace(
+            /\\/g,
+            "\\\\"
+        )
+        .replace(
+            /'/g,
+            "\\'"
+        )
+        .replace(
+            /"/g,
+            '\\"'
+        )
+        .replace(
+            /\n/g,
+            "\\n"
+        )
+        .replace(
+            /\r/g,
+            "\\r"
+        );
+
+    }
+
+
+
+    /* =====================================================
+       LOGOUT
+       ===================================================== */
+
+    document
+        .getElementById(
+            "sidebarLogoutBtn"
+        )
+        .addEventListener(
+            "click",
+            function() {
+
+                localStorage.removeItem(
+                    "smartWorkshopUser"
+                );
+
 
                 window.location.href =
                     "../login.html";
 
             }
-            else {
+        );
 
-                document
-                    .getElementById(
-                        "welcomeMessage"
-                    )
-                    .textContent =
-                    "Welcome, " +
-                    user.full_name +
-                    " (" +
-                    user.username +
-                    ")";
+
+
+    /* =====================================================
+       CLOSE MODALS BY CLICKING OUTSIDE
+       ===================================================== */
+
+    document
+        .getElementById(
+            "studentModal"
+        )
+        .addEventListener(
+            "click",
+            function(event) {
+
+                if (
+                    event.target ===
+                    this
+                ) {
+
+                    closeStudentModal();
+
+                }
 
             }
+        );
 
-        }
+
+    document
+        .getElementById(
+            "toolModal"
+        )
+        .addEventListener(
+            "click",
+            function(event) {
+
+                if (
+                    event.target ===
+                    this
+                ) {
+
+                    closeToolModal();
+
+                }
+
+            }
+        );
 
 
-        function logout() {
+    document
+        .getElementById(
+            "returnModal"
+        )
+        .addEventListener(
+            "click",
+            function(event) {
 
-            localStorage.removeItem(
-                "smartWorkshopUser"
-            );
+                if (
+                    event.target ===
+                    this
+                ) {
 
-            window.location.href =
-                "../login.html";
+                    closeReturnModal();
 
-        }
+                }
 
-    </script>
+            }
+        );
+
+
+
+    /* =====================================================
+       START DASHBOARD
+       ===================================================== */
+
+    async function startDashboard() {
+
+        console.log(
+            "Starting Admin Dashboard..."
+        );
+
+
+        await loadOverview();
+
+        await loadActiveBorrowings();
+
+        await loadToolStatus();
+
+        await loadHistory();
+
+    }
+
+
+    startDashboard();
+
+
+</script>
+
 
 </body>
 
