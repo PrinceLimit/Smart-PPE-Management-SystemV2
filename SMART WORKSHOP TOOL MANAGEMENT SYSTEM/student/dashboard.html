@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Student Dashboard - Smart Workshop</title>
+
+    <link rel="stylesheet" href="../css/style.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+
+<body>
+
+    <div class="dashboard-container">
+
+        <!-- HEADER -->
+        <header class="dashboard-header">
+
+            <div>
+                <h1>Smart Workshop</h1>
+                <p>Student Dashboard</p>
+            </div>
+
+            <button id="logoutBtn" class="logout-btn">
+                Logout
+            </button>
+
+        </header>
+
+
+        <!-- WELCOME -->
+        <section class="welcome-card">
+
+            <h2>
+                Welcome, <span id="studentName">Loading...</span> 👋
+            </h2>
+
+            <p id="studentClass">
+                Loading student information...
+            </p>
+
+        </section>
+
+
+        <!-- STAT CARDS -->
+        <section class="stats-grid">
+
+            <div class="stat-card">
+
+                <div class="stat-title">
+                    My Current Tools
+                </div>
+
+                <div class="stat-number" id="currentToolsCount">
+                    0
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-title">
+                    Borrowed
+                </div>
+
+                <div class="stat-number">
+                    <span id="borrowedCount">0</span>
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-title">
+                    Returned
+                </div>
+
+                <div class="stat-number">
+                    <span id="returnedCount">0</span>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- CURRENT TOOLS -->
+        <section class="dashboard-card">
+
+            <div class="section-header">
+
+                <div>
+                    <h2>My Current Tools</h2>
+                    <p>Tools currently borrowed by you</p>
+                </div>
+
+            </div>
+
+
+            <div id="currentToolsList">
+
+                <div class="loading">
+                    Loading tools...
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- TOOL STATUS -->
+        <section class="dashboard-card">
+
+            <div class="section-header">
+
+                <div>
+                    <h2>Tool Status</h2>
+                    <p>Current workshop equipment status</p>
+                </div>
+
+            </div>
+
+
+            <div id="toolStatusList">
+
+                <div class="loading">
+                    Loading tool status...
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- HISTORY -->
+        <section class="dashboard-card">
+
+            <div class="section-header">
+
+                <div>
+                    <h2>Borrowing History</h2>
+                    <p>Your previous tool borrowing records</p>
+                </div>
+
+            </div>
+
+
+            <div id="historyList">
+
+                <div class="loading">
+                    Loading history...
+                </div>
+
+            </div>
+
+        </section>
+
+    </div>
+
+
+<script>
+
+    // ==========================================
+    // SUPABASE CONFIG
+    // ==========================================
+
+    const SUPABASE_URL =
+        "https://tleawentwrxpqvvmmcut.supabase.co";
+
+    const SUPABASE_KEY =
+        "sb_publishable_awGWhy1V3Awozve8uSE_IQ_uliP2yGC";
+
+
+    const supabaseClient =
+        supabase.createClient(
+            SUPABASE_URL,
+            SUPABASE_KEY
+        );
+
+
+    // ==========================================
+    // CHECK LOGIN
+    // ==========================================
+
+    const savedUser =
+        localStorage.getItem("smartWorkshopUser");
+
+
+    if (!savedUser) {
+
+        window.location.href =
+            "../login.html";
+
+    }
+
+
+    let currentUser;
+
+    try {
+
+        currentUser =
+            JSON.parse(savedUser);
+
+    } catch (error) {
+
+        localStorage.removeItem(
+            "smartWorkshopUser"
+        );
+
+        window.location.href =
+            "../login.html";
+
+    }
+
+
+    if (
+        !currentUser ||
+        currentUser.role !== "student"
+    ) {
+
+        localStorage.removeItem(
+            "smartWorkshopUser"
+        );
+
+        window.location.href =
+            "../login.html";
+
+    }
+
+
+    // ==========================================
+    // LOAD STUDENT DATA
+    // ==========================================
+
+    async function loadStudentData() {
+
+        try {
+
+            const {
+                data,
+                error
+            } = await supabaseClient
+                .from("students")
+                .select("*")
+                .eq(
+                    "username",
+                    currentUser.username
+                )
+                .single();
+
+
+            if (error) {
+
+                console.error(error);
+
+                document.getElementById(
+                    "studentName"
+                ).textContent =
+                    currentUser.full_name || "Student";
+
+                document.getElementById(
+                    "studentClass"
+                ).textContent =
+                    "Unable to load student data.";
+
+                return;
+
+            }
+
+
+            document.getElementById(
+                "studentName"
+            ).textContent =
+                data.full_name;
+
+
+            document.getElementById(
+                "studentClass"
+            ).textContent =
+                data.class_name || "Class not assigned";
+
+
+            await loadBorrowings(data.id);
+
+            await loadTools();
+
+        } catch (error) {
+
+            console.error(
+                "Student loading error:",
+                error
+            );
+
+        }
+
+    }
+
+
+    // ==========================================
+    // LOAD BORROWING RECORDS
+    // ==========================================
+
+    async function loadBorrowings(studentId) {
+
+        const {
+            data,
+            error
+        } = await supabaseClient
+            .from("borrowings")
+            .select(`
+                *,
+                tools (
+                    tool_id,
+                    tool_name,
+                    rfid_uid,
+                    status
+                )
+            `)
+            .eq(
+                "student_id",
+                studentId
+            )
+            .order(
+                "borrowed_at",
+                {
+                    ascending: false
+                }
+            );
+
+
+        if (error) {
+
+            console.error(error);
+
+            document.getElementById(
+                "currentToolsList"
+            ).innerHTML =
+                `<p>Unable to load borrowing records.</p>`;
+
+            document.getElementById(
+                "historyList"
+            ).innerHTML =
+                `<p>Unable to load history.</p>`;
+
+            return;
+
+        }
+
+
+        // ======================================
+        // COUNTS
+        // ======================================
+
+        const borrowed =
+            data.filter(
+                record =>
+                    record.status === "BORROWED"
+            );
+
+
+        const returned =
+            data.filter(
+                record =>
+                    record.status === "RETURNED"
+            );
+
+
+        document.getElementById(
+            "currentToolsCount"
+        ).textContent =
+            borrowed.length;
+
+
+        document.getElementById(
+            "borrowedCount"
+        ).textContent =
+            borrowed.length;
+
+
+        document.getElementById(
+            "returnedCount"
+        ).textContent =
+            returned.length;
+
+
+        // ======================================
+        // CURRENT TOOLS
+        // ======================================
+
+        const currentContainer =
+            document.getElementById(
+                "currentToolsList"
+            );
+
+
+        if (borrowed.length === 0) {
+
+            currentContainer.innerHTML = `
+                <div class="empty-state">
+                    <h3>No tools currently borrowed</h3>
+                    <p>You are not currently using any workshop tools.</p>
+                </div>
+            `;
+
+        } else {
+
+            currentContainer.innerHTML =
+                borrowed
+                    .map(record => {
+
+                        const tool =
+                            record.tools;
+
+
+                        return `
+                            <div class="tool-row">
+
+                                <div>
+
+                                    <strong>
+                                        ${tool?.tool_id || "-"}
+                                    </strong>
+
+                                    <p>
+                                        ${tool?.tool_name || "Unknown Tool"}
+                                    </p>
+
+                                </div>
+
+
+                                <div>
+
+                                    <span class="status-badge in-use">
+                                        IN USE
+                                    </span>
+
+                                </div>
+
+                            </div>
+                        `;
+
+                    })
+                    .join("");
+
+        }
+
+
+        // ======================================
+        // HISTORY
+        // ======================================
+
+        const historyContainer =
+            document.getElementById(
+                "historyList"
+            );
+
+
+        if (data.length === 0) {
+
+            historyContainer.innerHTML = `
+                <div class="empty-state">
+                    <h3>No borrowing history</h3>
+                    <p>Your borrowing records will appear here.</p>
+                </div>
+            `;
+
+        } else {
+
+            historyContainer.innerHTML =
+                data
+                    .map(record => {
+
+                        const tool =
+                            record.tools;
+
+
+                        const borrowedDate =
+                            formatDate(
+                                record.borrowed_at
+                            );
+
+
+                        const returnedDate =
+                            record.returned_at
+                                ? formatDate(
+                                      record.returned_at
+                                  )
+                                : "-";
+
+
+                        const statusClass =
+                            record.status === "BORROWED"
+                                ? "in-use"
+                                : "returned";
+
+
+                        return `
+                            <div class="history-row">
+
+                                <div>
+
+                                    <strong>
+                                        ${tool?.tool_id || "-"}
+                                    </strong>
+
+                                    <p>
+                                        ${tool?.tool_name || "Unknown Tool"}
+                                    </p>
+
+                                </div>
+
+
+                                <div>
+
+                                    <p>
+                                        Borrowed:
+                                        ${borrowedDate}
+                                    </p>
+
+                                    <p>
+                                        Returned:
+                                        ${returnedDate}
+                                    </p>
+
+                                    <p>
+                                        Borrowed By:
+                                        ${record.borrowed_by || "-"}
+                                    </p>
+
+                                    <p>
+                                        Returned By:
+                                        ${record.returned_by || "-"}
+                                    </p>
+
+                                </div>
+
+
+                                <div>
+
+                                    <span class="status-badge ${statusClass}">
+                                        ${record.status}
+                                    </span>
+
+                                </div>
+
+                            </div>
+                        `;
+
+                    })
+                    .join("");
+
+        }
+
+    }
+
+
+    // ==========================================
+    // LOAD TOOL STATUS
+    // ==========================================
+
+    async function loadTools() {
+
+        const {
+            data,
+            error
+        } = await supabaseClient
+            .from("tools")
+            .select("*")
+            .order(
+                "tool_id",
+                {
+                    ascending: true
+                }
+            );
+
+
+        const container =
+            document.getElementById(
+                "toolStatusList"
+            );
+
+
+        if (error) {
+
+            console.error(error);
+
+            container.innerHTML =
+                `<p>Unable to load tool status.</p>`;
+
+            return;
+
+        }
+
+
+        if (!data || data.length === 0) {
+
+            container.innerHTML = `
+                <div class="empty-state">
+                    <h3>No tools found</h3>
+                </div>
+            `;
+
+            return;
+
+        }
+
+
+        container.innerHTML =
+            data
+                .map(tool => {
+
+                    const statusClass =
+                        tool.status === "IN USE"
+                            ? "in-use"
+                            : "available";
+
+
+                    return `
+                        <div class="tool-row">
+
+                            <div>
+
+                                <strong>
+                                    ${tool.tool_id}
+                                </strong>
+
+                                <p>
+                                    ${tool.tool_name}
+                                </p>
+
+                            </div>
+
+
+                            <div>
+
+                                <span class="status-badge ${statusClass}">
+                                    ${tool.status}
+                                </span>
+
+                            </div>
+
+                        </div>
+                    `;
+
+                })
+                .join("");
+
+    }
+
+
+    // ==========================================
+    // FORMAT DATE
+    // ==========================================
+
+    function formatDate(dateString) {
+
+        if (!dateString) {
+            return "-";
+        }
+
+
+        const date =
+            new Date(dateString);
+
+
+        return date.toLocaleString(
+            "en-MY",
+            {
+                dateStyle: "medium",
+                timeStyle: "short"
+            }
+        );
+
+    }
+
+
+    // ==========================================
+    // LOGOUT
+    // ==========================================
+
+    document
+        .getElementById("logoutBtn")
+        .addEventListener(
+            "click",
+            function () {
+
+                localStorage.removeItem(
+                    "smartWorkshopUser"
+                );
+
+                window.location.href =
+                    "../login.html";
+
+            }
+        );
+
+
+    // ==========================================
+    // START
+    // ==========================================
+
+    loadStudentData();
+
+</script>
+
+</body>
+</html>
